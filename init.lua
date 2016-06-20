@@ -25,6 +25,9 @@ At the moment, *torchnet* provides four set of important classes:
   - Engine: training/testing machine learning algorithm.
   - Meter: meter performance or any other quantity.
   - Log: output performance or any other string to file / disk in a consistent manner.
+  
+For an overview of the *torchnet* framework, please also refer to 
+[this paper](https://lvdmaaten.github.io/publications/papers/Torchnet_2016.pdf).
 
 ## Installation
 
