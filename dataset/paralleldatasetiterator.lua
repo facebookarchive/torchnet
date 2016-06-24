@@ -22,7 +22,7 @@ ParallelDatasetIterator.__init = argcheck{
 
 Allows to iterate over a dataset in a thread
 manner. `tnt.ParallelDatasetIterator:run()` guarantees that all samples
-will be seen, but does not guarantee the order.
+will be seen, but does not guarantee the order unless `ordered` is set to true.
 
 The purpose of this class is to have a zero pre-processing cost.
 When reading datasets on the fly from
@@ -38,15 +38,22 @@ by default.
 `closure(threadid)` will be called on each thread and must return a
 `tnt.Dataset` instance.
 
-`perm(idx)` is a permutation used to shuffle the examples. While the order
-is not guaranteed by `run()`, it is often ordered very similarly than the
-original dataset. If shuffling is needed, one can use this closure, or
-(better) use [tnt.ShuffleDataset](#ShuffleDataset) on the underlying
-dataset (returned by `closure()`).
+`perm(idx)` is a permutation used to shuffle the examples. If shuffling is
+needed, one can use this closure, or (better) use
+[tnt.ShuffleDataset](#ShuffleDataset) on the underlying dataset
+(returned by `closure()`).
 
 `filter(sample)` is a closure which returns `true` if the given sample
 should be considered or `false` if not. Note that filter is called _after_
 fetching the data in a threaded manner.
+
+`transform(sample)` is a function which maps the given sample to a new value.
+This transformation occurs before filtering.
+
+When `ordered` is set to true the ordering of samples returned by the iterator
+is guaranteed. This option is particularly useful for repeatable experiments.
+By default `ordered` is false, which means that order is not guaranteed by
+`run()` (though often the ordering is similar in practice).
 
 A common error raised by this dataset is when `closure()` is not
 serializable. Make sure that all [upvalues](http://www.lua.org/pil/27.3.3.html) of `closure()` are
@@ -65,8 +72,9 @@ on which `tnt.ParallelDatasetIterator` relies.
     {name='perm', type='function', default=function(idx) return idx end},
     {name='filter', type='function', default=function(sample) return true end},
     {name='transform', type='function', default=function(sample) return sample end},
+    {name='ordered', type='boolean', default=false},
     call =
-    function(self, init, closure, nthread, perm, filter, transform)
+    function(self, init, closure, nthread, perm, filter, transform, ordered)
         local function main(idx)
             gdataset = closure(idx)
             assert(torch.isTypeOf(gdataset, 'tnt.Dataset'),
@@ -79,6 +87,7 @@ on which `tnt.ParallelDatasetIterator` relies.
          self.__nthread = nthread
          local size = sizes[1][1]
          local sample -- beware: do not put this line in loop()
+         local sampleOrigIdx
          function self.run()
             -- loading size of the dataset each time run() is called
             threads:addjob(
@@ -93,26 +102,79 @@ on which `tnt.ParallelDatasetIterator` relies.
             threads:dojob()
             local idx = 1
             local function enqueue()
-                while idx <= size and threads:acceptsjob() do
+               while idx <= size and threads:acceptsjob() do
                   threads:addjob(
-                     function(idx)
+                     function(argList)
+                        local origIdx, idx = unpack(argList)
                         local sample = gdataset:get(idx)
                         collectgarbage()
                         collectgarbage()
-                        return sample
-                    end,
-                    function(_sample_)
-                        sample = _sample_
-                    end,
-                    perm(idx)
-                    )
-                    idx = idx + 1
-                end
+                        return {sample, origIdx}
+                     end,
+                     function(argList)
+                        sample, sampleOrigIdx = unpack(argList)
+                     end,
+                     {idx, perm(idx)}
+                  )
+                  idx = idx + 1
+               end
             end
 
             enqueue()
-            return
-               function()
+
+            local iterFunction
+            if ordered then
+               local curSampleIdx = 1
+               local storedSamples = {}
+               -- `samplePlaceholder` stands in for samples which have been
+               -- filtered out by the `filter` function
+               local samplePlaceholder = {}
+
+               -- Move past placeholders (filtered out samples) in
+               -- `storedSamples`
+               local function advancePastPlaceholders()
+                  while storedSamples[curSampleIdx] == samplePlaceholder do
+                     storedSamples[curSampleIdx] = nil
+                     curSampleIdx = curSampleIdx + 1
+                  end
+               end
+
+               iterFunction = function()
+                  advancePastPlaceholders()
+
+                  -- Load into storedSamples until we find the next sample in
+                  -- the sequence or we run out of samples
+                  while storedSamples[curSampleIdx] == nil and threads:hasjob() do
+                     enqueue()
+                     threads:dojob()
+                     if threads:haserror() then
+                        threads:synchronize()
+                     end
+                     enqueue()
+
+                     sample = transform(sample)
+                     if filter(sample) then
+                        -- Store sample
+                        storedSamples[sampleOrigIdx] = sample
+                     else
+                        -- Mark sample as "filtered out"
+                        storedSamples[sampleOrigIdx] = samplePlaceholder
+                     end
+
+                     advancePastPlaceholders()
+                  end
+
+                  enqueue()
+
+                  local curSample = storedSamples[curSampleIdx]
+                  storedSamples[curSampleIdx] = nil
+
+                  curSampleIdx = curSampleIdx + 1
+
+                  return curSample
+               end
+            else
+               iterFunction = function()
                   while threads:hasjob() do
                      enqueue()
                      threads:dojob()
@@ -126,6 +188,9 @@ on which `tnt.ParallelDatasetIterator` relies.
                      end
                   end
                end
+            end
+
+            return iterFunction
          end
     end
 }
@@ -148,7 +213,7 @@ will print the size of the dataset loaded in the first available thread.
 
 ParallelDatasetIterator.execSingle =
   function(self, name, ...)
-      assert(not self.__threads:hasjob(), 'cannot exec during loop')
+      assert(not self.__threads:hasjob(), 'cannot execSingle during loop')
       local args = {...}
       local res
       self.__threads:addjob(
@@ -182,7 +247,7 @@ will print the size of the datasets loaded in each thread.
 
 ParallelDatasetIterator.exec =
    function(self, name, ...)
-      assert(not self.__threads:hasjob(), 'cannot execAll during loop')
+      assert(not self.__threads:hasjob(), 'cannot exec during loop')
       local args = {...}
       local res = {}
       self.__threads:specific(true)
