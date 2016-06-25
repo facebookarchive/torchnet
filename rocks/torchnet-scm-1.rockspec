@@ -23,7 +23,8 @@ dependencies = {
    "md5 >= 1.0",
    "luafilesystem >= 1.0",
    "luasocket >= 1.0",
-   "optim >= 1.0"
+   "optim >= 1.0",
+   "tds >= 1.0",
 }
 
 build = {
