@@ -27,6 +27,11 @@ lua files, so it is straightforward to install it with *luarocks*
 luarocks install torchnet
 ```
 
+To run the MNIST example from the paper, run:
+```
+th example/mnist.lua
+```
+
 ## Documentation
 
 Requiring *torchnet* returns a local variable containing all *torchnet*
