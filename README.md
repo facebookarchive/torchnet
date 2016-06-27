@@ -835,7 +835,7 @@ identity by default. It is often more interesting to use
 Execute the given method `name` on the underlying dataset, passing it the
 subsequent arguments, and returns what the `name` method returns.
 <a name="ParallelDatasetIterator">
-##### tnt.ParallelDatasetIterator(self[, init], closure, nthread[, perm][, filter][, transform])
+##### tnt.ParallelDatasetIterator(self[, init], closure, nthread[, perm][, filter][, transform][, ordered])
 ```
 ({
    self      = tnt.ParallelDatasetIterator  -- 
@@ -845,12 +845,13 @@ subsequent arguments, and returns what the `name` method returns.
   [perm      = function]                    --  [has default value]
   [filter    = function]                    --  [has default value]
   [transform = function]                    --  [has default value]
+  [ordered   = boolean]                     --  [default=false]
 })
 ```
 
 Allows to iterate over a dataset in a thread
 manner. `tnt.ParallelDatasetIterator:run()` guarantees that all samples
-will be seen, but does not guarantee the order.
+will be seen, but does not guarantee the order unless `ordered` is set to true.
 
 The purpose of this class is to have a zero pre-processing cost.
 When reading datasets on the fly from
@@ -866,15 +867,22 @@ by default.
 `closure(threadid)` will be called on each thread and must return a
 `tnt.Dataset` instance.
 
-`perm(idx)` is a permutation used to shuffle the examples. While the order
-is not guaranteed by `run()`, it is often ordered very similarly than the
-original dataset. If shuffling is needed, one can use this closure, or
-(better) use [tnt.ShuffleDataset](#ShuffleDataset) on the underlying
-dataset (returned by `closure()`).
+`perm(idx)` is a permutation used to shuffle the examples. If shuffling is
+needed, one can use this closure, or (better) use
+[tnt.ShuffleDataset](#ShuffleDataset) on the underlying dataset (returned by
+`closure()`).
 
 `filter(sample)` is a closure which returns `true` if the given sample
 should be considered or `false` if not. Note that filter is called _after_
 fetching the data in a threaded manner.
+
+`transform(sample)` is a function which maps the given sample to a new value.
+This transformation occurs before filtering.
+
+When `ordered` is set to true the ordering of samples returned by the iterator
+is guaranteed. This option is particularly useful for repeatable experiments.
+By default `ordered` is false, which means that order is not guaranteed by
+`run()` (though often the ordering is similar in practice).
 
 A common error raised by this dataset is when `closure()` is not
 serializable. Make sure that all [upvalues](http://www.lua.org/pil/27.3.3.html) of `closure()` are
