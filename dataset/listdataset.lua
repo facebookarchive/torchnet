@@ -113,7 +113,8 @@ ListDataset.size = argcheck{
    {name='self', type='tnt.ListDataset'},
    call =
       function(self)
-         return #self.list
+         return torch.isTensor(self.list) and torch.LongTensor(#self.list)[1]
+                                           or #self.list
       end
 }
 
@@ -122,7 +123,7 @@ ListDataset.get = argcheck{
    {name='idx', type='number'},
    call =
       function(self, idx)
-         assert(idx >= 1 and idx <= #self.list, 'out of bound')
+         assert(idx >= 1 and idx <= self:size(), 'out of bound')
          if self.path then
             return self.load(string.format("%s/%s", self.path, self.list[idx]))
          else
