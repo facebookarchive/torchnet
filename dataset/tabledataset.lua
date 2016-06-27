@@ -35,6 +35,7 @@ Data are loaded while constructing the `tnt.TableDataset`:
 ```
 `tnt.TableDataset` assumes that table has contiguous keys starting at 1.
 ]],
+    noordered = true,
     {name = 'self', type = 'tnt.TableDataset'},
     {name = 'data', type = 'table'},
     call = function(self, data)
