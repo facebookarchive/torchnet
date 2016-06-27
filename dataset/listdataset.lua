@@ -113,7 +113,7 @@ ListDataset.size = argcheck{
    {name='self', type='tnt.ListDataset'},
    call =
       function(self)
-         return torch.isTensor(self.list) and torch.LongTensor(#self.list)[1]
+         return torch.isTensor(self.list) and self.list:size(1)
                                            or #self.list
       end
 }
