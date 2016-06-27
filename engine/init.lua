@@ -82,6 +82,6 @@ Engine.test = argcheck{
    {name="self", type="tnt.Engine"},
    call =
       function(self)
-         error('A tnt.Engine should implement the train() function.')
+         error('A tnt.Engine should implement the test() function.')
       end
 }
