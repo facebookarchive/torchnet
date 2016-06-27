@@ -66,7 +66,8 @@ SGDEngine.train = argcheck{
             maxepoch = maxepoch,
             sample = {},
             epoch = 0, -- epoch done so far
-            t = 0 -- samples seen so far
+            t = 0, -- samples seen so far
+            training = true
          }
 
          self.hooks("onStart", state)
@@ -122,7 +123,8 @@ SGDEngine.test = argcheck{
          iterator = iterator,
          criterion = criterion,
          sample = {},
-         t = 0 -- samples seen so far
+         t = 0, -- samples seen so far
+         training = false
       }
 
       self.hooks("onStart", state)

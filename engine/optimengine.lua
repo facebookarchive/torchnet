@@ -76,7 +76,8 @@ OptimEngine.train = argcheck{
             config = config or {},
             optim = optimState or {},
             epoch = 0, -- epoch done so far
-            t = 0 -- samples seen so far
+            t = 0, -- samples seen so far
+            training = true
          }
 
          if paramFun then
