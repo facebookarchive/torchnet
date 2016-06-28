@@ -9,6 +9,12 @@ of patent rights can be found in the PATENTS file in the same directory.
 -- load torchnet:
 local tnt = require 'torchnet'
 
+-- use GPU or not:
+local cmd = torch.CmdLine()
+cmd:option('-usegpu', false, 'use gpu for training')
+local config = cmd:parse(arg)
+print(string.format('running on %s', config.usegpu and 'GPU' or 'CPU'))
+
 -- function that sets of dataset iterator:
 local function getIterator(mode)
    return tnt.ParallelDatasetIterator{
@@ -58,6 +64,24 @@ engine.hooks.onForwardCriterion = function(state)
       print(string.format('avg. loss: %2.4f; avg. error: %2.4f',
          meter:value(), clerr:value{k = 1}))
    end
+end
+
+-- set up GPU training:
+if config.usegpu then
+
+   -- copy model to GPU:
+   require 'cunn'
+   net       = net:cuda()
+   criterion = criterion:cuda()
+
+   -- copy sample to GPU buffer:
+   local igpu, tgpu = torch.CudaTensor(), torch.CudaTensor()
+   engine.hooks.onSample = function(state)
+      igpu:resize(state.sample.input:size() ):copy(state.sample.input)
+      tgpu:resize(state.sample.target:size()):copy(state.sample.target)
+      state.sample.input  = igpu
+      state.sample.target = tgpu
+   end  -- alternatively, this logic can be implemented via a TransformDataset
 end
 
 -- train the model:
