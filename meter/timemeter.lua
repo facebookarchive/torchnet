@@ -14,8 +14,8 @@ local TimeMeter = torch.class('tnt.TimeMeter', 'tnt.Meter', tnt)
 
 TimeMeter.__init = argcheck{
    doc = [[
-<a name="PrecisionAtKMeter">
-#### tnt.PrecisionAtKMeter(@ARGP)
+<a name="TimeMeter">
+#### tnt.TimeMeter(@ARGP)
 @ARGT
 
 The `tnt.TimeMeter` is designed to measure the time between events and can be
