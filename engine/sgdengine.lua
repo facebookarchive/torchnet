@@ -67,6 +67,7 @@ SGDEngine.train = argcheck{
             sample = {},
             epoch = 0, -- epoch done so far
             t = 0, -- samples seen so far
+            numbatches = 0, -- number of batches processed in an epoch so far
             training = true
          }
 
@@ -75,6 +76,7 @@ SGDEngine.train = argcheck{
             state.network:training()
 
             self.hooks("onStartEpoch", state)
+            state.numbatches = 0
             for sample in state.iterator() do
                state.sample = sample
                self.hooks("onSample", state)
@@ -103,6 +105,7 @@ SGDEngine.train = argcheck{
                   state.network:updateParameters(state.lr)
                end
                state.t = state.t + 1
+               state.numbatches = state.numbatches + 1
                self.hooks("onUpdate", state)
             end
             state.epoch = state.epoch + 1
