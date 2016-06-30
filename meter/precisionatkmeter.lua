@@ -18,8 +18,8 @@ PrecisionAtKMeter.__init = argcheck{
 #### tnt.PrecisionAtKMeter(@ARGP)
 @ARGT
 
-The `tnt.PrecisionAtKMeter` measures the precision@k of ranking methods at pre-
-specified levels k. The precision@k is the percentage of the k front-ranked
+The `tnt.PrecisionAtKMeter` measures the precision@k of ranking methods at pre-specified
+levels k. The precision@k is the percentage of the k front-ranked
 items according to the model that is in the list of correct (positive) targets.
 
 At initialization time, a table `topk` may be given as input that specifies the
