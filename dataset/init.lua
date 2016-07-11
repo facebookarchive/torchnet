@@ -70,3 +70,48 @@ Dataset.get =
                'get not implemented for class <%s>',
                torch.type(self)))
    end
+
+Dataset.batch =
+   function(...)
+      return tnt.BatchDataset(...)
+   end
+
+Dataset.resample =
+   function(...)
+      return tnt.ResampleDataset(...)
+   end
+
+Dataset.shuffle =
+   function(...)
+      return tnt.ShuffleDataset(...)
+   end
+
+Dataset.split =
+   function(...)
+      return tnt.SplitDataset(...)
+   end
+
+Dataset.transform =
+   function(...)
+      return tnt.TransformDataset(...)
+   end
+
+Dataset.iterator =
+   function(...)
+      return tnt.DatasetIterator(...)
+   end
+
+Dataset.parallel = argcheck{
+   {name='self', type='tnt.Dataset'},
+   {name='init', type='function', default=function(idx) end},
+   {name='nthread', type='number'},
+   {name='perm', type='function', default=function(idx) return idx end},
+   {name='filter', type='function', default=function(sample) return true end},
+   {name='transform', type='function', default=function(sample) return sample end},
+   {name='ordered', type='boolean', default=false},
+   call =
+   function(self, init, nthread, perm, filter, transform, ordered)
+      local closure = function() return self end
+      return tnt.ParallelDatasetIterator(init, closure, nthread, perm, filter, transform, ordered)
+   end
+}

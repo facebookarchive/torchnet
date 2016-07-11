@@ -137,3 +137,13 @@ DatasetIterator.exec =
          error(string.format('unknown function <%s>', name))
       end
    end
+
+DatasetIterator.filter =
+   function(self, filter)
+      return tnt.DatasetIterator({ iterator = self, filter = filter })
+   end
+
+DatasetIterator.transform =
+   function(self, transform)
+      return tnt.DatasetIterator({ iterator = self, transform = transform })
+   end
