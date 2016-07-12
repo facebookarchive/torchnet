@@ -346,12 +346,12 @@ transform.normalize = argcheck{
 @ARGT
 
 This function normalizes data, i.e., it removes its mean and
-devide it by its standard deviation.
+divide it by its standard deviation.
 
 The input must be a `Tensor`.
 
 Once create, a `threshold` can be given (must be a number). Then,
-the data will be devided by their standard deviation, only if this
+the data will be divided by their standard deviation, only if this
 deviation is greater than the `threshold`. This is handy, if the
 deviation is small and deviding by it could lead to unstability.
 ]],
