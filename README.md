@@ -822,17 +822,22 @@ end
 ```
 
 <a name="DatasetIterator">
-##### tnt.DatasetIterator(self, dataset[, filter][, transform])
+##### tnt.DatasetIterator(self, dataset[, perm][, filter][, transform])
 ```
 ({
    self      = tnt.DatasetIterator  -- 
    dataset   = tnt.Dataset          -- 
+  [perm      = function]            --  [has default value]
   [filter    = function]            --  [has default value]
   [transform = function]            --  [has default value]
 })
 ```
 
 The default dataset iterator.
+
+`perm(idx)` is a permutation used to shuffle the examples. If shuffling
+is needed, one can use this closure, or (better) use
+[tnt.ShuffleDataset](#ShuffleDataset) on the underlying dataset.
 
 `filter(sample)` is a closure which returns `true` if the given sample
 should be considered or `false` if not.

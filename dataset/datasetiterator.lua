@@ -52,6 +52,10 @@ DatasetIterator.__init = argcheck{
 
 The default dataset iterator.
 
+`perm(idx)` is a permutation used to shuffle the examples. If shuffling
+is needed, one can use this closure, or (better) use
+[tnt.ShuffleDataset](#ShuffleDataset) on the underlying dataset.
+
 `filter(sample)` is a closure which returns `true` if the given sample
 should be considered or `false` if not.
 
@@ -62,10 +66,11 @@ identity by default. It is often more interesting to use
 ]],
    {name='self', type='tnt.DatasetIterator'},
    {name='dataset', type='tnt.Dataset'},
+   {name='perm', type='function', default=function(idx) return idx end},
    {name='filter', type='function', default=function(sample) return true end},
    {name='transform', type='function', default=function(sample) return sample end},
    call =
-      function(self, dataset, filter, transform)
+      function(self, dataset, perm, filter, transform)
          self.dataset = dataset
          function self.run()
             local size = dataset:size()
@@ -73,7 +78,7 @@ identity by default. It is often more interesting to use
             return
                function()
                   while idx <= size do
-                     local sample = transform(dataset:get(idx))
+                     local sample = transform(dataset:get(perm(idx)))
                      idx = idx + 1
                      if filter(sample) then
                         return sample
