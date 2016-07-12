@@ -124,37 +124,3 @@ OptimEngine.train = argcheck{
          self.hooks("onEnd", state)
       end
 }
-
-OptimEngine.test = argcheck{
-   {name="self", type="tnt.OptimEngine"},
-   {name="network", type="nn.Module"},
-   {name="iterator", type="tnt.DatasetIterator"},
-   {name="criterion", type="nn.Criterion", opt=true},
-   call = function(self, network, iterator, criterion)
-      local state = {
-         network = network,
-         iterator = iterator,
-         criterion = criterion,
-         sample = {},
-         t = 0, -- samples seen so far
-         training = false
-      }
-
-      self.hooks("onStart", state)
-      state.network:evaluate()
-      for sample in state.iterator() do
-         state.sample = sample
-         self.hooks("onSample", state)
-         state.network:forward(sample.input)
-         state.t = state.t + 1
-         self.hooks("onForward", state)
-
-         if state.criterion then
-            state.criterion:forward(state.network.output, sample.target)
-            self.hooks("onForwardCriterion", state)
-         end
-
-      end
-      self.hooks("onEnd", state)
-   end
-}
