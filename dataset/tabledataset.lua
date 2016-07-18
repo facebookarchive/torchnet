@@ -29,7 +29,7 @@ The data must be contained in a `tds.Hash`.
 
 Data are loaded while constructing the `tnt.TableDataset`:
 ```lua
-> a = tnt.TableDataset({1,2,3})
+> a = tnt.TableDataset{data = {1,2,3}}
 > print(a:size())
 3
 ```
