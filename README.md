@@ -11,7 +11,8 @@ At the moment, *torchnet* provides four set of important classes:
   - Meter: meter performance or any other quantity.
   - Log: output performance or any other string to file / disk in a consistent manner.
 
-For an overview of the *torchnet* framework, please also refer to [this paper](https://lvdmaaten.github.io/publications/papers/Torchnet_2016.pdf).
+For an overview of the *torchnet* framework, please also refer to
+[this paper](https://lvdmaaten.github.io/publications/papers/Torchnet_2016.pdf).
 
 
 ## Installation
@@ -237,16 +238,16 @@ produces a function which multiplies any input by 2:
 #### transform.tablemergekeys()
 
 This function merges tables by key. More precisely, the input must be a
-`table` of `table` and this function will reverse the table orderto
+`table` of `table` and this function will reverse the table order to
 make the keys from the nested table accessible first.
 
 For example, if the input is:
 ```lua
-> x = { sample1 = {input = 1, target = "a"} , sample2 = {input = 2, target = "b", flag = "hard"}
+> x = { sample1 = {input = 1, target = "a"} , sample2 = {input = 2, target = "b", flag = "hard"}}
 ```
 Then apply this function will produce:
 ```lua
-> transform.tablemergekeys(x)
+> transform.tablemergekeys()(x)
 {
    input :
          {
@@ -369,10 +370,10 @@ each element `list[i]` will prefixed by `path/` when fed to `load()`.
 <a name = "TableDataset">
 #### tnt.TableDataset(self, data)
 ```
-({
+{
    self = tnt.TableDataset  -- 
    data = table             -- 
-})
+}
 ```
 
 `tnt.TableDataset` interfaces existing data
@@ -886,8 +887,8 @@ by default.
 
 `perm(idx)` is a permutation used to shuffle the examples. If shuffling is
 needed, one can use this closure, or (better) use
-[tnt.ShuffleDataset](#ShuffleDataset) on the underlying dataset (returned by
-`closure()`).
+[tnt.ShuffleDataset](#ShuffleDataset) on the underlying dataset
+(returned by `closure()`).
 
 `filter(sample)` is a closure which returns `true` if the given sample
 should be considered or `false` if not. Note that filter is called _after_
@@ -1219,8 +1220,8 @@ at k that were specified in `topk` at initialization time. Alternatively,
 `value(k)` returns the classification@k error as a number; only values of `k`
 that were element of `topk` are allowed. If `accuracy` was set to `true` at
 initialization time, the `value()` method returns accuracies instead of errors.
-<a name="PrecisionAtKMeter">
-#### tnt.PrecisionAtKMeter(self[, unit])
+<a name="TimeMeter">
+#### tnt.TimeMeter(self[, unit])
 ```
 ({
    self = tnt.TimeMeter  -- 
@@ -1256,8 +1257,8 @@ The `tnt.TimeMeter` provides the following methods:
 }
 ```
 
-The `tnt.PrecisionAtKMeter` measures the precision@k of ranking methods at pre-
-specified levels k. The precision@k is the percentage of the k front-ranked
+The `tnt.PrecisionAtKMeter` measures the precision@k of ranking methods at pre-specified
+levels k. The precision@k is the percentage of the k front-ranked
 items according to the model that is in the list of correct (positive) targets.
 
 At initialization time, a table `topk` may be given as input that specifies the

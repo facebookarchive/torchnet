@@ -207,16 +207,16 @@ transform.tablemergekeys = argcheck{
 #### transform.tablemergekeys()
 
 This function merges tables by key. More precisely, the input must be a
-`table` of `table` and this function will reverse the table orderto
+`table` of `table` and this function will reverse the table order to
 make the keys from the nested table accessible first.
 
 For example, if the input is:
 ```lua
-> x = { sample1 = {input = 1, target = "a"} , sample2 = {input = 2, target = "b", flag = "hard"}
+> x = { sample1 = {input = 1, target = "a"} , sample2 = {input = 2, target = "b", flag = "hard"}}
 ```
 Then apply this function will produce:
 ```lua
-> transform.tablemergekeys(x)
+> transform.tablemergekeys()(x)
 {
    input :
          {
@@ -240,7 +240,7 @@ Then apply this function will produce:
          return
             function(tbl)
                local mergedtbl = {}
-               for idx, elem in ipairs(tbl) do
+               for idx, elem in pairs(tbl) do
                   for key, value in pairs(elem) do
                      if not mergedtbl[key] then
                         mergedtbl[key] = {}
