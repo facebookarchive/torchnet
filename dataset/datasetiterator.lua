@@ -17,7 +17,7 @@ doc[[
 It is easy to iterate over datasets using a for loop. However, sometimes
 one wants to filter out samples in a on-the-fly manner or thread sample fetching.
 
-Iterators are here for this particular cases. In general, refrain writing
+Iterators are here for this particular cases. In general, refrain from writing
 iterators for handling custom cases, and write instead a `tnt.Dataset`
 
 Iterators implement two methods:

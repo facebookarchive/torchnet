@@ -103,6 +103,8 @@ require 'torchnet.log.remotelog'
 require 'torchnet.utils'
 require 'torchnet.transform'
 
+require 'torchnet.test.test'
+
 -- function that makes package serializable:
 local function _makepackageserializable(packagetbl, packagename)
    local mt = torch.class('package.' .. packagename)
