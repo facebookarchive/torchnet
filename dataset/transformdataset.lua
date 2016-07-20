@@ -44,13 +44,13 @@ dataset.
       function(self, dataset, transform, key)
          self.dataset = dataset
          if key then
-            function self.transform(z, idx)
+            function self.__transform(z, idx)
                assert(z[key], 'missing key in sample')
                z[key] = transform(z[key], idx)
                return z
             end
          else
-            function self.transform(z, idx)
+            function self.__transform(z, idx)
                return transform(z, idx)
             end
          end
@@ -85,7 +85,7 @@ Each closure must return the new value of the corresponding field.
          end
          self.dataset = dataset
          transforms = utils.table.copy(transforms)
-         function self.transform(z)
+         function self.__transform(z)
             for key,transform in pairs(transforms) do
                assert(z[key], 'missing key in sample')
                z[key] = transform(z[key])
@@ -108,7 +108,7 @@ TransformDataset.get = argcheck{
    {name='idx', type='number'},
    call =
       function(self, idx)
-         return self.transform(
+         return self.__transform(
             self.dataset:get(idx), idx
          )
       end
