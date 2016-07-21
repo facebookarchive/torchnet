@@ -13,6 +13,7 @@ local tnt = require 'torchnet.env'
 local doc = require 'argcheck.doc'
 
 doc[[
+[![Build Status](https://travis-ci.org/torchnet/torchnet.svg)](https://travis-ci.org/torchnet/torchnet)
 
 # torchnet
 
