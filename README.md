@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/torchnet/torchnet.svg)](https://travis-ci.org/torchnet/torchnet)
 
 # torchnet
 
