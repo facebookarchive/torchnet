@@ -1220,8 +1220,8 @@ at k that were specified in `topk` at initialization time. Alternatively,
 `value(k)` returns the classification@k error as a number; only values of `k`
 that were element of `topk` are allowed. If `accuracy` was set to `true` at
 initialization time, the `value()` method returns accuracies instead of errors.
-<a name="PrecisionAtKMeter">
-#### tnt.PrecisionAtKMeter(self[, unit])
+<a name="TimeMeter">
+#### tnt.TimeMeter(self[, unit])
 ```
 ({
    self = tnt.TimeMeter  -- 
@@ -1246,6 +1246,7 @@ The `tnt.TimeMeter` provides the following methods:
    * `resume()` resumes the timer.
    * `incUnit()` increments the unit counter by one.
    * `value()` returns the time passed since the last `reset()`; divided by the counter value when `unit=true`.
+
 <a name="PrecisionAtKMeter">
 #### tnt.PrecisionAtKMeter(self[, topk][, dim][, online])
 ```
