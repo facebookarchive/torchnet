@@ -88,6 +88,14 @@ function test.TransformDataset()
    tester:eq(d:size(), 3)
    tester:eq(d:get(2).input, 3)
    tester:eq(d:get(2).target, 4)
+
+   -- alternative way of expressing the same transform
+   local d = tnt.TableDataset{data = data}
+      :transform(function(x) return x + 1 end, 'input')
+      :transform(function(x) return x * 2 end, 'target')
+   tester:eq(d:size(), 3)
+   tester:eq(d:get(2).input, 3)
+   tester:eq(d:get(2).target, 4)
 end
 
 function test.ConcatDataset()
