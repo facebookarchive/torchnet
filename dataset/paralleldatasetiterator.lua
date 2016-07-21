@@ -104,17 +104,16 @@ on which `tnt.ParallelDatasetIterator` relies.
             local function enqueue()
                while idx <= size and threads:acceptsjob() do
                   threads:addjob(
-                     function(argList)
-                        local origIdx, idx = unpack(argList)
+                     function(origIdx, idx)
                         local sample = gdataset:get(idx)
                         collectgarbage()
                         collectgarbage()
-                        return {sample, origIdx}
+                        return sample, origIdx
                      end,
-                     function(argList)
-                        sample, sampleOrigIdx = unpack(argList)
+                     function(_sample_, _origIdx_)
+                        sample, sampleOrigIdx = _sample_, _origIdx_
                      end,
-                     {idx, perm(idx)}
+                     idx, perm(idx)
                   )
                   idx = idx + 1
                end
