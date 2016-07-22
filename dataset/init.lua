@@ -76,7 +76,7 @@ Dataset.batch =
       return tnt.BatchDataset(...)
    end
 
-Dataset.resample =
+Dataset.sample =
    function(...)
       return tnt.ResampleDataset(...)
    end
