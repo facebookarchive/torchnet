@@ -44,6 +44,27 @@ function test.DatasetIterator_transform()
    tester:eq(count, 6)
 end
 
+function test.DatasetIterator_exec()
+   local itr = tnt.TableDataset{data = torch.range(1, 100):totable()}
+      :shuffle()
+      :transform(function(i) return i end)
+      :iterator()
+
+   local output1 = {}
+   local output2 = {}
+
+   for value in itr:run() do table.insert(output1, value) end
+   itr:exec('resample')
+   for value in itr:run() do table.insert(output2, value) end
+
+   tester:ne(output1, output2, 'dataset not shuffled')
+
+   table.sort(output1)
+   table.sort(output2)
+   tester:eq(output1, torch.range(1, 100):totable(), 'output1 incorrect')
+   tester:eq(output2, torch.range(1, 100):totable(), 'output2 incorrect')
+end
+
 function test.DatasetIterator_perm()
    local d = tnt.TableDataset{data = {1, 2, 3, 4, 5, 6}}
    local itr = tnt.DatasetIterator{
