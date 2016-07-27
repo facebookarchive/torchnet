@@ -103,7 +103,7 @@ TableMeter.add = argcheck{
              ("The output size (%d) and the target (%d) don't match"):format(#output, #target))
 
       if (not self.meters[1]) then
-         self._createMeters(#output)
+         self:_createMeters(#output)
       end
       assert(#output == #self.meters,
             ("The output size (%d) and the number of meters that you've specified (%d) don't match"):format(#output, #target))
