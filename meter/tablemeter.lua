@@ -67,7 +67,7 @@ TableMeter._createMeters = argcheck{
 TableMeter.reset = argcheck{
    {name="self", type="tnt.TableMeter"},
    call = function(self)
-      for _,k in ipairs(self.meters) do
+      for i=1,#self.meters do
          self.meters[i]:reset()
       end
    end
@@ -137,9 +137,9 @@ TableMeter.value = argcheck{
             return self.meters[k]:value(parameters)
          elseif(unpack) then
             -- Hack for Lua version compatibility
-            return self.meters[k]:value(upack(parameters))
+            return self.meters[k]:value(unpack(parameters))
          else
-            return self.meters[k]:value(table.upack(parameters))
+            return self.meters[k]:value(table.unpack(parameters))
          end
 
       else

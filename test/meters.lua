@@ -1,5 +1,4 @@
 local tnt = require 'torchnet.env'
-local tds = require 'tds'
 
 local tester
 local test = torch.TestSuite()
@@ -14,7 +13,7 @@ function test.AverageValueMeter()
    tester:assert(var ~= var, "Variance for a single value is undefined")
 
    mtr:add(3)
-   local avg, var = mtr:value()
+   avg, var = mtr:value()
 
    tester:eq(avg, 2)
    tester:eq(var, math.sqrt(2))
