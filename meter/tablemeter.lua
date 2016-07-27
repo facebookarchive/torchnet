@@ -36,7 +36,7 @@ If `k` is omitted then the meters will be created at the first `add` call
    call = function(self, k, class, classArgs)
       self.meters = {}
       self.class = class
-      self.classArg = classArgs
+      self.classArgs = classArgs
 
       if (k) then
          self:_createMeters(k)
@@ -97,6 +97,7 @@ TableMeter.add = argcheck{
    {name="self", type="tnt.TableMeter"},
    {name="output", type="table"},
    {name="target", type="table"},
+   overload=TableMeter.add,
    call = function(self, output, target)
       assert(#output == #target,
              ("The output size (%d) and the target (%d) don't match"):format(#output, #target))
