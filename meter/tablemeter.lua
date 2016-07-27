@@ -31,12 +31,12 @@ If `k` is omitted then the meters will be created at the first `add` call
     doc="The number of subelements to the `nn.ConcatTable`, i.e. table length."},
    {name="class", type="table",
     doc="A class for the meter that should be applied to each table element, e.g. tnt.AverageValueMeter"},
-   {name="classArgs", type="table", default={},
+   {name="classargs", type="table", default={},
     doc="Arguments for the meter class"},
-   call = function(self, k, class, classArgs)
+   call = function(self, k, class, classargs)
       self.meters = {}
       self.class = class
-      self.classArgs = classArgs
+      self.classargs = classargs
 
       if (k) then
          self:_createMeters(k)
@@ -51,14 +51,14 @@ TableMeter._createMeters = argcheck{
       assert(k > 0, "The number of meters must be positive")
 
       for i=1,k do
-         -- Named arguments for consructor then classArgs[1] is nil
-         if (self.classArgs[1] == nil) then
-            self.meters[i] = self.class(self.classArgs)
+         -- Named arguments for consructor then classargs[1] is nil
+         if (self.classargs[1] == nil) then
+            self.meters[i] = self.class(self.classargs)
          elseif(unpack) then
             -- Hack for Lua version compatibility
-            self.meters[i] = self.class(unpack(self.classArgs))
+            self.meters[i] = self.class(unpack(self.classargs))
          else
-            self.meters[i] = self.class(table.unpack(self.classArgs))
+            self.meters[i] = self.class(table.unpack(self.classargs))
          end
       end
    end
@@ -144,8 +144,8 @@ TableMeter.value = argcheck{
 
       else
          local value = {}
-         for k=1,#self.meters do
-            value[k] = self:value(k, parameters)
+         for meter_no=1,#self.meters do
+            value[meter_no] = self:value(meter_no, parameters)
          end
          return value
       end

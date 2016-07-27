@@ -41,7 +41,7 @@ end
 function test.TableMeter()
    local mtr = tnt.TableMeter{
       class =  tnt.ClassErrorMeter,
-      classArgs = {topk = {1}}
+      classargs = {topk = {1}}
    }
 
    local output = {
