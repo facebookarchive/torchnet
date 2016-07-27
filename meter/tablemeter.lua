@@ -1,0 +1,146 @@
+--[[
+   Copyright (c) 2016-present, Facebook, Inc.
+   All rights reserved.
+
+   This source code is licensed under the BSD-style license found in the
+   LICENSE file in the root directory of this source tree. An additional grant
+   of patent rights can be found in the PATENTS file in the same directory.
+]]--
+
+local tnt = require 'torchnet.env'
+local argcheck = require 'argcheck'
+
+local TableMeter = torch.class('tnt.TableMeter', 'tnt.Meter', tnt)
+
+TableMeter.__init = argcheck{
+   doc = [[
+<a name="TableMeter">
+#### tnt.TableMeter(@ARGP)
+@ARGT
+
+The `tnt.TableMeter` allows you to take in outputs from a `nn.ConcatTable` construct
+that instead of a tensor returns a table of tensors. This is useful when working with
+multilabel classification tasks where there may be a varying number of outputs.
+
+If `k` is omitted then the meters will be created at the first `add` call
+
+]],
+   noordered = true,
+   {name="self", type="tnt.TableMeter"},
+   {name="k", type="number", opt=true,
+    doc="The number of subelements to the `nn.ConcatTable`, i.e. table length."},
+   {name="class", type="function",
+    doc="A constructor for the meter that should be applied to each table element, e.g. tnt.AverageValueMeter"},
+   {name="classArgs", type="table", default={},
+    doc="Arguments for the meter class"},
+   call = function(self, k, class, classArgs)
+      self.meters = {}
+      self.class = class
+      self.classArg = classArgs
+
+      if (k) then
+         self:_createMeters(k)
+      end
+   end
+}
+
+TableMeter._createMeters = argcheck{
+   {name="self", type="tnt.TableMeter"},
+   {name="k", type="number"},
+   call=function(self, k)
+      assert(k > 0, "The number of meters must be positive")
+
+      for i=1,k do
+         -- Named arguments for consructor then classArgs[1] is nil
+         if (self.classArgs[1] == nil) then
+            self.meters[i] = self.class(self.classArgs)
+         elseif(unpack) then
+            -- Hack for Lua version compatibility
+            self.meters[i] = self.class(unpack(self.classArgs))
+         else
+            self.meters[i] = self.class(table.unpack(self.classArgs))
+         end
+      end
+   end
+}
+
+TableMeter.reset = argcheck{
+   {name="self", type="tnt.TableMeter"},
+   call = function(self)
+      for _,k in ipairs(self.meters) do
+         self.meters[i]:reset()
+      end
+   end
+}
+
+TableMeter.add = argcheck{
+   {name="self", type="tnt.TableMeter"},
+   {name="output", type="table"},
+   {name="target", type="torch.*Tensor"},
+   call = function(self, output, target)
+      assert(#output == target:size(2),
+            ([[The output  length (%d) doesn't match the length of the tensor's
+            second dimension (%d). The first dimension in the target should be
+            the batch size for tensors.]]):format(#output, target:size(2)))
+
+      local table_target = {}
+      for i=1,#output do
+         table_target[i] = target[{{},{i}}]:squeeze()
+      end
+
+      return self:add(output, table_target)
+   end
+}
+
+
+TableMeter.add = argcheck{
+   {name="self", type="tnt.TableMeter"},
+   {name="output", type="table"},
+   {name="target", type="table"},
+   call = function(self, output, target)
+      assert(#output == #target,
+             ("The output size (%d) and the target (%d) don't match"):format(#output, #target))
+
+      if (not self.meters[1]) then
+         self._createMeters(#output)
+      end
+      assert(#output == #self.meters,
+            ("The output size (%d) and the number of meters that you've specified (%d) don't match"):format(#output, #target))
+
+      for i=1,#self.meters do
+         self.meters[i]:add(output[i], target[i])
+      end
+
+   end
+}
+
+TableMeter.value = argcheck{
+   {name="self", type="tnt.TableMeter"},
+   {name="k", type="number", opt=true},
+   {name="parameters", type="table", opt=true,
+      doc="Parameters that should be passed to the underlying meter"},
+   call = function(self, k, parameters)
+      if k then
+         assert(self.meters[k],
+               ('invalid k (%d), i.e. there is no output corresponding to this meter'):format(k))
+
+         if (not parameters) then
+            return self.meter[k]:value()
+         elseif (parameters[1] == nil) then
+            return self.meter[k]:value(parameters)
+         elseif(unpack) then
+            -- Hack for Lua version compatibility
+            return self.meter[k]:value(upack(parameters))
+         else
+            return self.meter[k]:value(table.upack(parameters))
+         end
+
+      else
+         local value = {}
+         for k=1,#self.meters do
+            value[k] = self:value(k)
+         end
+         return value
+      end
+   end
+}
