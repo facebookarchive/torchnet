@@ -29,8 +29,8 @@ If `k` is omitted then the meters will be created at the first `add` call
    {name="self", type="tnt.TableMeter"},
    {name="k", type="number", opt=true,
     doc="The number of subelements to the `nn.ConcatTable`, i.e. table length."},
-   {name="class", type="function",
-    doc="A constructor for the meter that should be applied to each table element, e.g. tnt.AverageValueMeter"},
+   {name="class", type="table",
+    doc="A class for the meter that should be applied to each table element, e.g. tnt.AverageValueMeter"},
    {name="classArgs", type="table", default={},
     doc="Arguments for the meter class"},
    call = function(self, k, class, classArgs)
