@@ -85,7 +85,7 @@ TableMeter.add = argcheck{
 
       local table_target = {}
       for i=1,#output do
-         table_target[i] = target[{{},{i}}]:squeeze()
+         table_target[i] = target[{{},{i}}]:squeeze():clone()
       end
 
       return self:add(output, table_target)
@@ -126,14 +126,14 @@ TableMeter.value = argcheck{
                ('invalid k (%d), i.e. there is no output corresponding to this meter'):format(k))
 
          if (not parameters) then
-            return self.meter[k]:value()
+            return self.meters[k]:value()
          elseif (parameters[1] == nil) then
-            return self.meter[k]:value(parameters)
+            return self.meters[k]:value(parameters)
          elseif(unpack) then
             -- Hack for Lua version compatibility
-            return self.meter[k]:value(upack(parameters))
+            return self.meters[k]:value(upack(parameters))
          else
-            return self.meter[k]:value(table.upack(parameters))
+            return self.meters[k]:value(table.upack(parameters))
          end
 
       else
