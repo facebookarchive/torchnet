@@ -57,9 +57,12 @@ function test.TableMeter()
 
    target = torch.Tensor({{2,2},{1,1},{2,1}})
    mtr:add(output, target)
-   local error = mtr:value()
-   tester:eq(error, {{50}, {50}}, "All should be correct")
 
+   error = mtr:value()
+   tester:eq(error, {{50}, {50}}, "Half should be correct")
+
+   error = mtr:value{parameters = {k = 1}}
+   tester:eq(error, {50, 50}, "Should be able to pass parameters to sub-meter")
 end
 
 return function(_tester_)

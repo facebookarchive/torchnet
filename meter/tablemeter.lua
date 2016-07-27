@@ -121,6 +121,12 @@ TableMeter.value = argcheck{
    {name="parameters", type="table", opt=true,
       doc="Parameters that should be passed to the underlying meter"},
    call = function(self, k, parameters)
+
+      -- Odd hack as argcheck seems to encapsulate parameters inside its own table
+      if (parameters and parameters.parameters) then
+         parameters = parameters.parameters
+      end
+
       if k then
          assert(self.meters[k],
                ('invalid k (%d), i.e. there is no output corresponding to this meter'):format(k))
@@ -139,7 +145,7 @@ TableMeter.value = argcheck{
       else
          local value = {}
          for k=1,#self.meters do
-            value[k] = self:value(k)
+            value[k] = self:value(k, parameters)
          end
          return value
       end
