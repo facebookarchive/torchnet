@@ -78,14 +78,15 @@ TableMeter.add = argcheck{
    {name="output", type="table"},
    {name="target", type="torch.*Tensor"},
    call = function(self, output, target)
-      assert(#output == target:size(2),
-            ([[The output  length (%d) doesn't match the length of the tensor's
+      assert(#output == target:size(1),
+            ([[Size error:
+            The output  length (%d) doesn't match the length of the tensor's
             second dimension (%d). The first dimension in the target should be
-            the batch size for tensors.]]):format(#output, target:size(2)))
+            the batch size for tensors.]]):format(#output, target:size(1)))
 
       local table_target = {}
       for i=1,#output do
-         table_target[i] = target[{{},{i}}]:squeeze():clone()
+         table_target[i] = target[{{i},{}}]:squeeze():clone()
       end
 
       return self:add(output, table_target)

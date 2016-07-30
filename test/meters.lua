@@ -45,16 +45,31 @@ function test.TableMeter()
    }
 
    local output = {
-      torch.Tensor({{1,0,0},{0,1,0},{0,0,1}}),
-      torch.Tensor({{1,0},{0,1},{0,1}})
+      torch.Tensor{
+         {1,0,0},
+         {0,1,0},
+         {0,0,1}
+      },
+      torch.Tensor{
+         {1,0},
+         {0,1},
+         {0,1}
+      }
    }
 
-   local target = torch.Tensor({{1,1},{2,2},{3,2}})
+   local target = torch.Tensor{
+      {1,2,3},
+      {1,2,2}
+   }
+
    mtr:add(output, target)
    local error = mtr:value()
    tester:eq(error, {{0}, {0}}, "All should be correct")
 
-   target = torch.Tensor({{2,2},{1,1},{2,1}})
+   target = torch.Tensor{
+      {2,1,2},
+      {2,1,1}
+   }
    mtr:add(output, target)
 
    error = mtr:value()
