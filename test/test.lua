@@ -10,6 +10,7 @@ end
 local tester = torch.Tester()
 tester:add(paths.dofile('datasets.lua')(tester))
 tester:add(paths.dofile('iterators.lua')(tester))
+tester:add(paths.dofile('meters.lua')(tester))
 
 function tnt.test(tests)
    tester:run(tests)
