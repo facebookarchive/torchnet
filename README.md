@@ -943,7 +943,7 @@ will print the size of the datasets loaded in each thread.
 ### tnt.Engine
 
 In experimenting with different models and datasets, the underlying training
-procedure is often the same. The Engine module provides the boilerplate logic
+procedure is often the same. The `Engine` module provides the boilerplate logic
 necessary for the training and testing of models. This might include conducting
 the interaction between model (`nn.Module`), `tnt.DatasetIterator`s,
 `nn.Criterion`s, and `tnt.Meter`s.
@@ -955,7 +955,7 @@ An instance `engine` of a `tnt.Engine()` implements two main methods:
   * `engine:test()`,  for evaluating a model on data
         (optionally with respect to a `nn.Criterion`).
 
-The Engine can be implemented for any common underlying training and testing
+The `Engine` can be implemented for any common underlying training and testing
 procedure involving a model and data. It can also be designed to allow user
 control after certain events such as forward prop, criterion evaluation, or the
 end of an epoch, by using coroutines (see `tnt.SGDEngine`).
