@@ -169,9 +169,9 @@ For example, the following code:
 is equivalent to compose the transformations stored in [1] and [2], i.e.,
 defining the following transformation:
 ```lua
-> f =  function(x) return 2*x + 10 end ```
+> f =  function(x) return 2*x + 10 end
+ ```
 Note that transformations stored with keys `foo` and `4` are ignored.
-```
 <a name = "transform.merge">
 #### transform.merge(transforms)
 ```
