@@ -968,6 +968,31 @@ procedure in `train`, including data sampling, forward prop, back prop, and
 parameter updates. It also operates as a coroutine allowing a user control
  (i.e. increment some sort of `tnt.Meter`) at events such as 'start',
 'start-epoch', 'forward', 'forward-criterion', 'backward', etc.
+The available hooks are the following:
+```lua
+hooks = {
+   ['onStart']             = function() end, -- Right before training
+   ['onStartEpoch']        = function() end, -- Before new epoch
+   ['onSample']            = function() end, -- After getting a sample
+   ['onForward']           = function() end, -- After model:forward
+   ['onForwardCriterion']  = function() end, -- After criterion:forward
+   ['onBackwardCriterion'] = function() end, -- After criterion:backward
+   ['onBackward']          = function() end, -- After model:backward
+   ['onUpdate']            = function() end, -- After UpdateParameters
+   ['onEndEpoch']          = function() end, -- Right before completing epoch
+   ['onEnd']               = function() end, -- After training
+}
+```
+To specify a new closure for a given hook, we can access to it with
+`engine.hooks.<onEvent>`. For example, we could reset a `Meter` before every
+epoch by:
+```lua
+local engine = tnt.SGDEngine()
+local meter  = tnt.AverageValueMeter()
+engine.hooks.onStartEpoch = function(state)
+   meter:reset()
+end
+```
 
 Accordingly, `train` requires a network (`nn.Module`), a criterion expressing the
 loss function (`nn.Criterion`), a dataset iterator (`tnt.DatasetIterator`), and a
@@ -975,7 +1000,22 @@ learning rate, at the minimum. The `test` function allows for simple evaluation
 of a model on a dataset.
 
 A `state` is maintained for external access to outputs and parameters of modules
-as well as sampled data.
+as well as sampled data. The content of the `state` table is the following, where
+the passed values come from the arguments of `engine:train()`:
+```lua
+state = {
+   ['network']     = network,
+   ['criterion']   = criterion,
+   ['iterator']    = iterator,
+   ['lr']          = lr,
+   ['lrcriterion'] = lrcriterion,
+   ['maxepoch']    = maxepoch,
+   ['sample']      = {},
+   ['epoch']       = 0, -- epoch done so far
+   ['t']           = 0, -- samples seen so far
+   ['training']    = true
+}
+```
 
 ### tnt.OptimEngine
 
