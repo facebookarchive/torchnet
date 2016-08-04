@@ -15,14 +15,14 @@ doc[[
 
 ### tnt.SGDEngine
 
-The SGDEngine module implements the Stochastic Gradient Descent training
+The `SGDEngine` module implements the Stochastic Gradient Descent training
 procedure in `train`, including data sampling, forward prop, back prop, and
 parameter updates. It also operates as a coroutine allowing a user control
  (i.e. increment some sort of `tnt.Meter`) at events such as 'start',
 'start-epoch', 'forward', 'forward-criterion', 'backward', etc.
 
-Accordingly, `train` requires a network (nn.Module), a criterion expressing the
-loss function (nn.Criterion), a dataset iterator (tnt.DatasetIterator), and a
+Accordingly, `train` requires a network (`nn.Module`), a criterion expressing the
+loss function (`nn.Criterion`), a dataset iterator (`tnt.DatasetIterator`), and a
 learning rate, at the minimum. The `test` function allows for simple evaluation
 of a model on a dataset.
 

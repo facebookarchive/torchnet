@@ -7,10 +7,10 @@ of abstractions aiming at encouraging code re-use as well as encouraging
 modular programming.
 
 At the moment, *torchnet* provides four set of important classes:
-  - Dataset: handling and pre-processing data in various ways.
-  - Engine: training/testing machine learning algorithm.
-  - Meter: meter performance or any other quantity.
-  - Log: output performance or any other string to file / disk in a consistent manner.
+  - `Dataset`: handling and pre-processing data in various ways.
+  - `Engine`: training/testing machine learning algorithm.
+  - `Meter`: meter performance or any other quantity.
+  - `Log`: output performance or any other string to file / disk in a consistent manner.
 
 For an overview of the *torchnet* framework, please also refer to [this paper](https://lvdmaaten.github.io/publications/papers/Torchnet_2016.pdf).
 
@@ -815,7 +815,7 @@ for sample in iterator:run() do
 end
 ```
 
-Iterators implement the __call event, so one might also use the `()` operator:
+Iterators implement the `__call` event, so one might also use the `()` operator:
 ```lua
 for sample in iterator() do
   <do something with sample>
@@ -945,7 +945,7 @@ will print the size of the datasets loaded in each thread.
 In experimenting with different models and datasets, the underlying training
 procedure is often the same. The Engine module provides the boilerplate logic
 necessary for the training and testing of models. This might include conducting
-the interaction between model (nn.Module), `tnt.DatasetIterator`s,
+the interaction between model (`nn.Module`), `tnt.DatasetIterator`s,
 `nn.Criterion`s, and `tnt.Meter`s.
 
 An instance `engine` of a `tnt.Engine()` implements two main methods:
@@ -963,14 +963,14 @@ end of an epoch, by using coroutines (see `tnt.SGDEngine`).
 
 ### tnt.SGDEngine
 
-The SGDEngine module implements the Stochastic Gradient Descent training
+The `SGDEngine` module implements the Stochastic Gradient Descent training
 procedure in `train`, including data sampling, forward prop, back prop, and
 parameter updates. It also operates as a coroutine allowing a user control
  (i.e. increment some sort of `tnt.Meter`) at events such as 'start',
 'start-epoch', 'forward', 'forward-criterion', 'backward', etc.
 
-Accordingly, `train` requires a network (nn.Module), a criterion expressing the
-loss function (nn.Criterion), a dataset iterator (tnt.DatasetIterator), and a
+Accordingly, `train` requires a network (`nn.Module`), a criterion expressing the
+loss function (`nn.Criterion`), a dataset iterator (`tnt.DatasetIterator`), and a
 learning rate, at the minimum. The `test` function allows for simple evaluation
 of a model on a dataset.
 
@@ -979,14 +979,14 @@ as well as sampled data.
 
 ### tnt.OptimEngine
 
-The OptimEngine module wraps the optimization functions from
+The `OptimEngine` module wraps the optimization functions from
 https://github.com/torch/optim. At the start of training, the engine will call
 `getParameters` on the provided network.
 
 The `train` method requires the following parameters in addition to the
-SGDEngine.train parameters:
+`SGDEngine.train` parameters:
 
-  * `optimMethod` the optimization function (e.g optim.sgd)
+  * `optimMethod` the optimization function (e.g `optim.sgd`)
   * `config` a table with configuration parameters for the optimizer
 
 Example:
@@ -1003,7 +1003,7 @@ Example:
      },
   }
 ```
-#### Meters
+### tnt.Meter
 
 When training a model, you generally would like to measure how the model is
 performing. Specifically, you may want to measure the average processing time
@@ -1404,20 +1404,20 @@ a specific level k can be obtained by calling `value(k)`. Note that the level
 
 Please note that the number of outputs and relevances C should always be at
 least as high as the highest NDCG level k that the meter is computing.
-### Log
+### tnt.Log
 
-Log classes act as tables indexed by string keys. Allowed keys must be
+`Log` classes act as tables indexed by string keys. Allowed keys must be
 provided at construction. A special key `__status__` can be also set the
 convenience method `log:status()` to record basic messages.
 
-Viewers closures can be attached to a Log, and called at different events:
-   * `onSet(log, key, value)`: when setting a key to the Log with `log:set{}`.
+Viewers closures can be attached to a `Log`, and called at different events:
+   * `onSet(log, key, value)`: when setting a key to the `Log` with `log:set{}`.
    * `onGet(log, key)`: when querying a key with `log:get()`.
-   * `onFlush(log)`: when flushing out the stored data of the Log with `log:flush()`.
-   * `onClose(log)`: when closing a Log with `log:close()`.
+   * `onFlush(log)`: when flushing out the stored data of the `Log` with `log:flush()`.
+   * `onClose(log)`: when closing a `Log` with `log:close()`.
 
 Typical viewer closures are `text` or `json`, which allow to write to disk
-or to the console a subset of the keys stored by the Log, in a particular
+or to the console a subset of the keys stored by the `Log`, in a particular
 format. The special viewer closure `status` is made to be called on `set()`
 events, and will print out only status records.
 
@@ -1471,7 +1471,7 @@ log:flush()
 }
 ```
 
-Creates a new Log with allowed keys (strings) `keys`.  Specifiy event
+Creates a new `Log` with allowed keys (strings) `keys`.  Specifiy event
 closures with table of functions `onClose`, `onFlush`, `onGet` and `onSet`,
 which will be called when `close()`, `flush()`, `get()`, and `set{}`
 methods will be called, respectively.
@@ -1559,20 +1559,20 @@ Attach a set of functions (provided in a table) to a given event.
 }
 ```
 
-Creates a new RemoteLog with allowed keys (strings) `keys`.  Specifiy event
+Creates a new `RemoteLog` with allowed keys (strings) `keys`.  Specifiy event
 closures with table of functions `onClose`, `onFlush`, `onGet` and `onSet`,
 which will be called when `close()`, `flush()`, `get()`, and `set{}`
 methods will be called, respectively.
 
-If `server` is not provided, RemoteLog creates a server which can later be
+If `server` is not provided, `RemoteLog` creates a server which can later be
 reached at the address provided by `server()`.
 
-If `server` is provided, RemoteLog will dialog with the given server to
-store any values to be recorded by the Log (or query any of these values).
+If `server` is provided, `RemoteLog` will dialog with the given server to
+store any values to be recorded by the `Log` (or query any of these values).
 
-A given server can record different Log, with different names. The default name
+A given server can record different `Log`, with different names. The default name
 is `default`, but can be specified with the `name` option.
 
-At this time, it is important to call the `close()` method when RemoteLog
+At this time, it is important to call the `close()` method when `RemoteLog`
 is not used anymore (before quitting the application).
 

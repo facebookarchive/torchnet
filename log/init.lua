@@ -14,20 +14,20 @@ local doc = require 'argcheck.doc'
 local Log = torch.class('tnt.Log', tnt)
 
 doc[[
-### Log
+### tnt.Log
 
-Log classes act as tables indexed by string keys. Allowed keys must be
+`Log` classes act as tables indexed by string keys. Allowed keys must be
 provided at construction. A special key `__status__` can be also set the
 convenience method `log:status()` to record basic messages.
 
-Viewers closures can be attached to a Log, and called at different events:
-   * `onSet(log, key, value)`: when setting a key to the Log with `log:set{}`.
+Viewers closures can be attached to a `Log`, and called at different events:
+   * `onSet(log, key, value)`: when setting a key to the `Log` with `log:set{}`.
    * `onGet(log, key)`: when querying a key with `log:get()`.
-   * `onFlush(log)`: when flushing out the stored data of the Log with `log:flush()`.
-   * `onClose(log)`: when closing a Log with `log:close()`.
+   * `onFlush(log)`: when flushing out the stored data of the `Log` with `log:flush()`.
+   * `onClose(log)`: when closing a `Log` with `log:close()`.
 
 Typical viewer closures are `text` or `json`, which allow to write to disk
-or to the console a subset of the keys stored by the Log, in a particular
+or to the console a subset of the keys stored by the `Log`, in a particular
 format. The special viewer closure `status` is made to be called on `set()`
 events, and will print out only status records.
 
@@ -82,7 +82,7 @@ Log.__init = argcheck{
 #### tnt.Log(@ARGP)
 @ARGT
 
-Creates a new Log with allowed keys (strings) `keys`.  Specifiy event
+Creates a new `Log` with allowed keys (strings) `keys`.  Specifiy event
 closures with table of functions `onClose`, `onFlush`, `onGet` and `onSet`,
 which will be called when `close()`, `flush()`, `get()`, and `set{}`
 methods will be called, respectively.

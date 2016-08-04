@@ -142,21 +142,21 @@ RemoteLog.__init = argcheck{
 #### tnt.RemoteLog(@ARGP)
 @ARGT
 
-Creates a new RemoteLog with allowed keys (strings) `keys`.  Specifiy event
+Creates a new `RemoteLog` with allowed keys (strings) `keys`.  Specifiy event
 closures with table of functions `onClose`, `onFlush`, `onGet` and `onSet`,
 which will be called when `close()`, `flush()`, `get()`, and `set{}`
 methods will be called, respectively.
 
-If `server` is not provided, RemoteLog creates a server which can later be
+If `server` is not provided, `RemoteLog` creates a server which can later be
 reached at the address provided by `server()`.
 
-If `server` is provided, RemoteLog will dialog with the given server to
-store any values to be recorded by the Log (or query any of these values).
+If `server` is provided, `RemoteLog` will dialog with the given server to
+store any values to be recorded by the `Log` (or query any of these values).
 
-A given server can record different Log, with different names. The default name
+A given server can record different `Log`, with different names. The default name
 is `default`, but can be specified with the `name` option.
 
-At this time, it is important to call the `close()` method when RemoteLog
+At this time, it is important to call the `close()` method when `RemoteLog`
 is not used anymore (before quitting the application).
 ]],
    noordered=true,

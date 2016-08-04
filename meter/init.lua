@@ -14,7 +14,7 @@ local doc = require 'argcheck.doc'
 local Meter = torch.class('tnt.Meter', tnt)
 
 doc[[
-#### Meters
+### tnt.Meter
 
 When training a model, you generally would like to measure how the model is
 performing. Specifically, you may want to measure the average processing time

@@ -18,7 +18,7 @@ doc[[
 In experimenting with different models and datasets, the underlying training
 procedure is often the same. The Engine module provides the boilerplate logic
 necessary for the training and testing of models. This might include conducting
-the interaction between model (nn.Module), `tnt.DatasetIterator`s,
+the interaction between model (`nn.Module`), `tnt.DatasetIterator`s,
 `nn.Criterion`s, and `tnt.Meter`s.
 
 An instance `engine` of a `tnt.Engine()` implements two main methods:

@@ -32,7 +32,7 @@ for sample in iterator:run() do
 end
 ```
 
-Iterators implement the __call event, so one might also use the `()` operator:
+Iterators implement the `__call` event, so one might also use the `()` operator:
 ```lua
 for sample in iterator() do
   <do something with sample>
