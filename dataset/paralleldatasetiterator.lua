@@ -17,7 +17,7 @@ local ParallelDatasetIterator = torch.class('tnt.ParallelDatasetIterator', 'tnt.
 ParallelDatasetIterator.__init = argcheck{
    doc = [[
 <a name="ParallelDatasetIterator">
-##### tnt.ParallelDatasetIterator(@ARGP)
+#### tnt.ParallelDatasetIterator(@ARGP)
 @ARGT
 
 Allows to iterate over a dataset in a thread
@@ -196,7 +196,7 @@ on which `tnt.ParallelDatasetIterator` relies.
 
 doc[[
 <a name="ParallelDatasetIterator.execSingle">
-##### tnt.ParallelDatasetIterator.execSingle(tnt.DatasetIterator, name, ...)
+#### tnt.ParallelDatasetIterator.execSingle(tnt.DatasetIterator, name, ...)
 
 Execute the given method `name` on the dataset corresponding to the first
 available thread, passing it the subsequent arguments, and returns what the
@@ -228,7 +228,7 @@ ParallelDatasetIterator.execSingle =
 
 doc[[
 <a name="ParallelDatasetIterator.exec">
-##### tnt.ParallelDatasetIterator.exec(tnt.DatasetIterator, name, ...)
+#### tnt.ParallelDatasetIterator.exec(tnt.DatasetIterator, name, ...)
 
 Execute the given method `name` on the underlying datasets in each thread,
 passing to each of them the subsequent arguments, and returns a table

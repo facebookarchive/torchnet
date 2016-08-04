@@ -12,7 +12,7 @@ local argcheck = require 'argcheck'
 local doc = require 'argcheck.doc'
 
 doc[[
-#### Dataset Iterators
+### Dataset Iterators
 
 It is easy to iterate over datasets using a for loop. However, sometimes
 one wants to filter out samples in a on-the-fly manner or thread sample fetching.
@@ -47,7 +47,7 @@ local DatasetIterator = torch.class('tnt.DatasetIterator', tnt)
 DatasetIterator.__init = argcheck{
    doc = [[
 <a name="DatasetIterator">
-##### tnt.DatasetIterator(@ARGP)
+#### tnt.DatasetIterator(@ARGP)
 @ARGT
 
 The default dataset iterator.
@@ -124,7 +124,7 @@ DatasetIterator.__call__ =
 
 doc[[
 <a name="DatasetIterator.exec">
-##### tnt.DatasetIterator.exec(tnt.DatasetIterator, name, ...)
+#### tnt.DatasetIterator.exec(tnt.DatasetIterator, name, ...)
 
 Execute the given method `name` on the underlying dataset, passing it the
 subsequent arguments, and returns what the `name` method returns.

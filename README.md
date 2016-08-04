@@ -795,7 +795,7 @@ construction.
 
 The current dataset size changes accordingly, as well as the samples returned
 by the `get()` method.
-#### Dataset Iterators
+### Dataset Iterators
 
 It is easy to iterate over datasets using a for loop. However, sometimes
 one wants to filter out samples in a on-the-fly manner or thread sample fetching.
@@ -823,7 +823,7 @@ end
 ```
 
 <a name="DatasetIterator">
-##### tnt.DatasetIterator(self, dataset[, perm][, filter][, transform])
+#### tnt.DatasetIterator(self, dataset[, perm][, filter][, transform])
 ```
 ({
    self      = tnt.DatasetIterator  -- 
@@ -848,12 +848,12 @@ samples. It returns a modified version of the given `sample`. It is the
 identity by default. It is often more interesting to use
 [tnt.TransformDataset](#TransformDataset) for that purpose.
 <a name="DatasetIterator.exec">
-##### tnt.DatasetIterator.exec(tnt.DatasetIterator, name, ...)
+#### tnt.DatasetIterator.exec(tnt.DatasetIterator, name, ...)
 
 Execute the given method `name` on the underlying dataset, passing it the
 subsequent arguments, and returns what the `name` method returns.
 <a name="ParallelDatasetIterator">
-##### tnt.ParallelDatasetIterator(self[, init], closure, nthread[, perm][, filter][, transform][, ordered])
+#### tnt.ParallelDatasetIterator(self[, init], closure, nthread[, perm][, filter][, transform][, ordered])
 ```
 ({
    self      = tnt.ParallelDatasetIterator  -- 
@@ -912,7 +912,7 @@ and to make sure you require all the appropriate torch packages needed to (de-)s
 For more information, check out the [threads package](https://github.com/torch/threads),
 on which `tnt.ParallelDatasetIterator` relies.
 <a name="ParallelDatasetIterator.execSingle">
-##### tnt.ParallelDatasetIterator.execSingle(tnt.DatasetIterator, name, ...)
+#### tnt.ParallelDatasetIterator.execSingle(tnt.DatasetIterator, name, ...)
 
 Execute the given method `name` on the dataset corresponding to the first
 available thread, passing it the subsequent arguments, and returns what the
@@ -925,7 +925,7 @@ For example:
 ```
 will print the size of the dataset loaded in the first available thread.
 <a name="ParallelDatasetIterator.exec">
-##### tnt.ParallelDatasetIterator.exec(tnt.DatasetIterator, name, ...)
+#### tnt.ParallelDatasetIterator.exec(tnt.DatasetIterator, name, ...)
 
 Execute the given method `name` on the underlying datasets in each thread,
 passing to each of them the subsequent arguments, and returns a table
