@@ -272,6 +272,18 @@ function test.mAPMeter()
    )
 end
 
+function test.NDCGMeter()
+   local mtr = tnt.NDCGMeter{K = {6}}
+
+   -- From: https://en.wikipedia.org/wiki/Discounted_cumulative_gain#Normalized_DCG
+   local relevance = torch.DoubleTensor{3,2,3,0,1,2}
+   local output = torch.linspace(relevance:size(1), 1, relevance:size(1)):double()
+   mtr:add(output, relevance)
+
+   local est = mtr:value()
+   tester:eq(est[6], 0.932, "Problematic nDGC with K=6", 10^-3)
+end
+
 return function(_tester_)
    tester = _tester_
    return test
