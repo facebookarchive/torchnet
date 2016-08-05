@@ -280,6 +280,154 @@ function test.mAPMeter()
    )
 end
 
+function test.NDCGMeter()
+   local mtr = tnt.NDCGMeter{K = {6}}
+
+   -- From: https://en.wikipedia.org/wiki/Discounted_cumulative_gain#Normalized_DCG
+   local relevance = torch.DoubleTensor{3,2,3,0,1,2}
+   local output = torch.linspace(relevance:size(1), 1, relevance:size(1)):double()
+   mtr:add(output, relevance)
+
+   local est = mtr:value()
+   tester:eq(est[6], 0.932, "Problematic nDGC with K=6", 10^-3)
+end
+
+function test.PrecisionMeter()
+   local mtr = tnt.PrecisionMeter{}
+
+   local target = torch.zeros(10)
+   target:narrow(1, 3, 7):fill(1)
+   local output = torch.zeros(10)
+   output:narrow(1, 2, 6):fill(1)
+
+   mtr:add(output, target)
+
+   local tp = 5
+   local fp = 1
+   tester:eq(mtr:value()[0.5], 100 * tp / (tp + fp), "Basic test", 10^-2)
+
+   mtr = tnt.PrecisionMeter{
+      threshold = {.5, .7}
+   }
+
+   target = torch.zeros(10)
+   target:narrow(1, 3, 7):fill(1)
+   output = torch.zeros(10)
+   output:narrow(1, 2, 3):fill(.5)
+   output:narrow(1, 5, 3):fill(.7)
+
+   mtr:add(output, target)
+   tp = 5
+   fp = 1
+   tester:eq(mtr:value()[0.5], 100 * tp / (tp + fp), "Cutoff at 0.5", 10^-2)
+   tester:eq(mtr:value()[0.7], 100, "Cutoff at 0.7", 10^-2)
+end
+
+function test.PrecisionAtKMeter()
+   local mtr = tnt.PrecisionAtKMeter{topk = {1, 2, 3}}
+
+   local target = torch.eye(3)
+   local output = torch.Tensor{
+      {.5,.1,.4},
+      {.1,.5,.4},
+      {.1,.4,.5}
+   }
+   mtr:add(output, target)
+   tester:eq(mtr:value()[1], 100*3/3, "Top 1 matches", 10^-3)
+   tester:eq(mtr:value()[2], 100*3/(3*2), "Top 2 matches", 10^-3)
+   tester:eq(mtr:value()[3], 100*3/(3*3), "Top 3 matches", 10^-3)
+
+   mtr:add(output, target) -- Adding the same twice shouldn't change anything
+   tester:eq(mtr:value()[1], 100*3/3, "Top 1 matches", 10^-3)
+   tester:eq(mtr:value()[2], 100*3/(3*2), "Top 2 matches", 10^-3)
+   tester:eq(mtr:value()[3], 100*3/(3*3), "Top 3 matches", 10^-3)
+
+   mtr:reset()
+   target[1][3] = 1
+
+   mtr:add(output, target)
+   tester:eq(mtr:value()[1], 100*3/3, "Top 1 matches", 10^-3)
+   tester:eq(mtr:value()[2], 100*(3 + 1)/(3 * 2), "Top 2 matches", 10^-3)
+   tester:eq(mtr:value()[3], 100*(3 + 1)/(3 * 3), "Top 3 matches", 10^-3)
+
+   mtr:reset()
+   output = torch.Tensor{
+      {.1,.5,.4},
+      {.1,.5,.4},
+      {.5,.4,.1}
+   }
+   mtr:add(output, target)
+   tester:eq(mtr:value()[1], 100*1/3, "Top 1 matches", 10^-3)
+   tester:eq(mtr:value()[2], 100*(1 + 1)/(3 * 2), "Top 2 matches", 10^-3)
+   tester:eq(mtr:value()[3], 100*(1 + 1 + 2)/(3 * 3), "Top 3 matches", 10^-3)
+
+   local mtr = tnt.PrecisionAtKMeter{topk = {1, 2, 3}, online = true}
+
+   local target = torch.eye(3)
+   local output = torch.Tensor{
+      {.5,.1,.4},
+      {.1,.5,.4},
+      {.1,.4,.5}
+   }
+   mtr:add(output, target)
+   tester:eq(mtr:value()[1], 100*3/3, "Top 1 matches", 10^-3)
+   tester:eq(mtr:value()[2], 100*3/(3*2), "Top 2 matches", 10^-3)
+   tester:eq(mtr:value()[3], 100*3/(3*3), "Top 3 matches", 10^-3)
+
+   mtr:add(output, target)
+   tester:eq(mtr:value()[1], 100*3/3, "Top 1 matches", 10^-3)
+   tester:eq(mtr:value()[2], 100*3*2/(3*2), "Top 2 matches", 10^-3)
+   tester:eq(mtr:value()[3], 100*3*2/(3*3), "Top 3 matches", 10^-3)
+end
+
+function test.RecallMeter()
+   local mtr = tnt.RecallMeter{}
+
+   local target = torch.zeros(10)
+   target:narrow(1, 3, 7):fill(1)
+   local output = torch.zeros(10)
+   output:narrow(1, 2, 6):fill(1)
+
+   mtr:add(output, target)
+
+   local tp = 5
+   local fn = 2
+   tester:eq(mtr:value()[0.5], 100 * tp / (tp + fn), "Basic test", 10^-2)
+
+   mtr = tnt.RecallMeter{
+      threshold = {.5, .7}
+   }
+
+   target = torch.zeros(10)
+   target:narrow(1, 3, 7):fill(1)
+   output = torch.zeros(10)
+   output:narrow(1, 2, 3):fill(.5)
+   output:narrow(1, 5, 3):fill(.7)
+
+   mtr:add(output, target)
+   tester:eq(mtr:value()[0.5], 100 * tp / (tp + fn), "Cutoff at 0.5", 10^-2)
+   tp = tp - 2
+   fn = fn + 2
+   tester:eq(mtr:value()[0.7], 100 * tp / (tp + fn), "Cutoff at 0.7", 10^-2)
+end
+
+function test.TimeMeter()
+   local mtr = tnt.TimeMeter()
+
+   local function wait(seconds)
+     local start = os.time()
+     repeat until os.time() > start + seconds
+   end
+
+   mtr:reset()
+   wait(1)
+   local passed_time = mtr:value()
+   tester:assert(passed_time < 2,
+                ("Too long time passed: %.1f sec >= 2 sec"):format(passed_time))
+   tester:assert(passed_time > .5,
+                ("Too short time passed:  %.1f sec <= 0.5 sec"):format(passed_time))
+end
+
 return function(_tester_)
    tester = _tester_
    return test
