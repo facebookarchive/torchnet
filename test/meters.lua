@@ -155,22 +155,30 @@ end
 function test.AUCMeter()
    local mtr = tnt.AUCMeter()
 
-   -- From http://stats.stackexchange.com/questions/145566/how-to-calculate-area-under-the-curve-auc-or-the-c-statistic-by-hand
-   local samples = torch.Tensor{
-      {33,6,6,11,2}, --normal
-      {3,2,2,11,33} -- abnormal
-   }
-   for i=1,samples:size(2) do
-      local target = torch.Tensor():resize(samples:narrow(2,i,1):sum()):zero()
-      target:narrow(1,1,samples[2][i]):fill(1)
-      local output = torch.Tensor(target:size(1)):fill(i)
-      mtr:add(output, target)
-   end
+   local test_size = 10^3
+   mtr:add(torch.rand(test_size), torch.zeros(test_size))
+   mtr:add(torch.rand(test_size), torch.Tensor(test_size):fill(1))
+   local err = mtr:value()
+   tester:eq(err, 0.5, "Random guesses should provide a AUC close to 0.5", 10^-1)
 
-   local error, tpr, fpr = mtr:value()
+   mtr:add(torch.Tensor(test_size):fill(0), torch.zeros(test_size))
+   mtr:add(torch.Tensor(test_size):fill(.4), torch.zeros(test_size))
+   mtr:add(torch.Tensor(test_size):fill(1), torch.Tensor(test_size):fill(1))
+   err = mtr:value()
+   tester:eq(err, 1, "Only correct guesses should provide a AUC close to 1", 10^-1)
 
-   tester:assert(math.abs(error - 0.8931711) < 10^-3,
-      ("The AUC error does not match: %.3f is not equal to 0.893"):format(error))
+   -- Simulate a random situation where all the guesses are correct
+   mtr:reset()
+   local output = torch.abs(torch.rand(test_size)-.5)*2/3
+   mtr:add(output, torch.zeros(test_size))
+   output = torch.min(
+      torch.cat(torch.rand(test_size) + .75,
+                torch.Tensor(test_size):fill(1),
+                2),
+      2)
+   mtr:add(output:fill(1), torch.Tensor(test_size):fill(1))
+   err = mtr:value()
+   tester:eq(err, 1, "Simulated random correct guesses should provide a AUC close to 1", 10^-1)
 end
 
 
