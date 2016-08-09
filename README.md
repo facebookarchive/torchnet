@@ -1463,24 +1463,25 @@ events, and will print out only status records.
 
 A typical use case would be the following:
 ```lua
+tnt = require 'torchnet'
 
 -- require the viewers we want
-local logtext = require 'torchnet.log.view.text'
-local logstatus = require 'torchnet.log.view.status'
+logtext = require 'torchnet.log.view.text'
+logstatus = require 'torchnet.log.view.status'
 
-local log = tnt.Log{
+log = tnt.Log{
    keys = {"loss", "accuracy"},
    onFlush = {
       -- write out all keys in "log" file
-      logtext{filename=string.format('%s/log', rundir), keys={"loss", "accuracy"}, format={"%10.5f", "%3.2f"}},
+      logtext{filename='log.txt', keys={"loss", "accuracy"}, format={"%10.5f", "%3.2f"}},
       -- write out loss in a standalone file
-      logtext{filename=string.format('%s/loss', rundir), keys={"loss"}}
+      logtext{filename='loss.txt', keys={"loss"}},
       -- print on screen too
-      logtext{keys=logkeys, keys=keys={"loss", "accuracy"}},
+      logtext{keys={"loss", "accuracy"}},
    },
    onSet = {
       -- add status to log
-      logstatus{filename=string.format('%s/log', rundir)},
+      logstatus{filename='log.txt'},
       -- print status to screen
       logstatus{},
    }
