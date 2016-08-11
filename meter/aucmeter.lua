@@ -106,7 +106,10 @@ AUCMeter.value = argcheck{
          fpr:div(torch.mul(self.targets, -1):add(1):sum())
 
          -- compute AUC:
-         local auc = torch.div(tpr, fpr:nElement()):sum()
+         local auc = torch.cmul(
+            tpr:narrow(1, 1, tpr:nElement() - 1),
+            fpr:narrow(1, 2, fpr:nElement() - 1) -
+            fpr:narrow(1, 1, fpr:nElement() - 1)):sum()
 
          -- return AUC and ROC curve:
          return auc, tpr, fpr
