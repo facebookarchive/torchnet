@@ -91,6 +91,7 @@ least as high as the highest NDCG level k that the meter is computing.
 ]],
    {name="self", type="tnt.NDCGMeter"},
    {name="K",    type="table", default = {1}},
+   noordered=true,
    call =
       function(self, K)
          self.K = torch.LongTensor(K):sort():totable()
