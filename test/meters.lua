@@ -161,24 +161,15 @@ function test.AUCMeter()
    local err = mtr:value()
    tester:eq(err, 0.5, "Random guesses should provide a AUC close to 0.5", 10^-1)
 
+   mtr:reset()
    mtr:add(torch.Tensor(test_size):fill(0), torch.zeros(test_size))
+   mtr:add(torch.Tensor(test_size):fill(.1), torch.zeros(test_size))
+   mtr:add(torch.Tensor(test_size):fill(.2), torch.zeros(test_size))
+   mtr:add(torch.Tensor(test_size):fill(.3), torch.zeros(test_size))
    mtr:add(torch.Tensor(test_size):fill(.4), torch.zeros(test_size))
    mtr:add(torch.Tensor(test_size):fill(1), torch.Tensor(test_size):fill(1))
    err = mtr:value()
    tester:eq(err, 1, "Only correct guesses should provide a AUC close to 1", 10^-1)
-
-   -- Simulate a random situation where all the guesses are correct
-   mtr:reset()
-   local output = torch.abs(torch.rand(test_size)-.5)*2/3
-   mtr:add(output, torch.zeros(test_size))
-   output = torch.min(
-      torch.cat(torch.rand(test_size) + .75,
-                torch.Tensor(test_size):fill(1),
-                2),
-      2)
-   mtr:add(output:fill(1), torch.Tensor(test_size):fill(1))
-   err = mtr:value()
-   tester:eq(err, 1, "Simulated random correct guesses should provide a AUC close to 1", 10^-1)
 end
 
 
