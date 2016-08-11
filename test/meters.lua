@@ -155,6 +155,7 @@ end
 function test.AUCMeter()
    local mtr = tnt.AUCMeter()
 
+   torch.manualSeed(41412)
    local test_size = 10^3
    mtr:add(torch.rand(test_size), torch.zeros(test_size))
    mtr:add(torch.rand(test_size), torch.Tensor(test_size):fill(1))
