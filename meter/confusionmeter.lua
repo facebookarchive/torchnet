@@ -116,7 +116,7 @@ ConfusionMeter.value = argcheck{
          local confmat
          if self.normalized then
             confmat = torch.DoubleTensor(self.conf:size()):copy(self.conf)
-            confmat:cdiv(confmat:sum(2):expandAs(confmat))
+            confmat:cdiv(confmat:sum(2):cmax(1e-12):expandAs(confmat))
          else
             confmat = self.conf
          end
