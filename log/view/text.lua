@@ -39,9 +39,11 @@ local text = argcheck{
          return function(log)
             local txt = {}
             for _, key in ipairs(keys) do
-               local format = key.format(log:get(key.name))
-               assert(type(format) == 'string', string.format("value for key %s cannot be converted to string", key))
-               table.insert(txt, format)
+               if log:get(key.name) then
+                  local format = key.format(log:get(key.name))
+                  assert(type(format) == 'string', string.format("value for key %s cannot be converted to string", key))
+                  table.insert(txt, format)
+               end
             end
             txt = table.concat(txt, separator)
             if filename then
