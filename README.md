@@ -713,10 +713,10 @@ size.
 If `size` is not provided, then the new dataset will have the same size
 than the underlying one.
 
-By default `sampler(dataset, idx)` is the identity. `dataset` corresponds
-to the underlying dataset provided at construction, and `idx` may take a
-value between 1 to `size`. It must return an index in the range acceptable
-for the underlying dataset.
+By default `sampler(dataset, idx)` is the identity, simply `return`ing `idx`.
+`dataset` corresponds to the underlying dataset provided at construction, and
+`idx` may take a value between 1 to `size`. It must return an index in the range
+acceptable for the underlying dataset.
 
 Purpose: shuffling data, re-weighting samples, getting a subset of the
 data. Note that an important sub-class is ([tnt.ShuffleDataset](#ShuffleDataset)),
