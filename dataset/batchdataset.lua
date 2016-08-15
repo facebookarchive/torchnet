@@ -70,8 +70,9 @@ convenient to write a dataset from scratch providing "batched" samples.
    {name='perm', type='function', default=function(idx, size) return idx end},
    {name='merge', type='function', opt=true},
    {name='policy', type='string', default='include-last'},
+   {name='filter', type='function', default=function(sample) return true end},
    call =
-      function(self, dataset, batchsize, perm, merge, policy)
+      function(self, dataset, batchsize, perm, merge, policy, filter)
          assert(batchsize > 0 and math.floor(batchsize) == batchsize,
             'batchsize should be a positive integer number')
          self.dataset = dataset
@@ -79,6 +80,7 @@ convenient to write a dataset from scratch providing "batched" samples.
          self.batchsize = batchsize
          self.makebatch = transform.makebatch{merge=merge}
          self.policy = policy
+         self.filter = filter
          self:size() -- check policy
       end
 }
@@ -115,7 +117,8 @@ BatchDataset.get = argcheck{
                break
             end
             idx = self.perm(idx, maxidx)
-            table.insert(samples, self.dataset:get(idx))
+            local sample = self.dataset:get(idx)
+            if self.filter(sample) then table.insert(samples, sample) end
          end
          samples = self.makebatch(samples)
          collectgarbage()
