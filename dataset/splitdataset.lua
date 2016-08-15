@@ -24,31 +24,38 @@ in use.
 
 The Lua hash table `partitions` is of the form (key, value) where key is a
 user-chosen string naming the partition, and value is a number representing
-the weight (in size) of the corresponding partition.
+the weight (as a number between 0 and 1) or the size (in number of samples)
+of the corresponding partition.
 
-The sum of the partition weights may or may not sum to one
-(`tnt.SplitDataset` will make them sum to one!).
-
-Partionning is achieved linearly (no shuffling). See
+Partioning is achieved linearly (no shuffling). See
 [tnt.ShuffleDataset](#ShuffleDataset) if you want to shuffle the dataset
 before partitioning.
+
+The optional variable `initialpartition` specifies the partition that is loaded
+initially.
 
 Purpose: useful in machine learning to perform validation procedures.
 ]],
    {name='self', type='tnt.SplitDataset'},
    {name='dataset', type='tnt.Dataset'},
    {name='partitions', type='table'},
+   {name='initialpartition', type='string', opt=true},
    call =
-      function(self, dataset, partitions)
+      function(self, dataset, partitions, initialpartition)
+
+         -- created sorted list of partition names (for determinism):
+         local partitionnames = {}
+         for name,_ in pairs(partitions) do
+            table.insert(partitionnames, name)
+         end
+         table.sort(partitionnames)
 
          -- create partition size tensor and table with partition names:
          self.__dataset = dataset
-         local n = 0; for _,_ in pairs(partitions) do n = n + 1 end
-         self.__partitionsizes = torch.DoubleTensor(n)
+         self.__partitionsizes = torch.DoubleTensor(#partitionnames)
          self.__names = {}
-         n = 0
-         for key, val in pairs(partitions) do
-            n = n + 1
+         for n, key in ipairs(partitionnames) do
+            local val = partitions[key]
             self.__partitionsizes[n] = val
             self.__names[key] = n
          end
@@ -68,15 +75,23 @@ Purpose: useful in machine learning to perform validation procedures.
          )
 
          -- if partition sizes are fractions, convert to sizes:
-         if math.abs(self.__partitionsizes:sum() - 1) < 1e-5 then
+         if self.__partitionsizes:sum() <= 1 then
             self.__partitionsizes = self.__partitionsizes:double()
-            self.__partitionsizes:mul(
-               self.__dataset:size() / self.__partitionsizes:sum()
-            ):floor():long()
+            self.__partitionsizes:mul(self.__dataset:size()):floor()
+         else
+            assert(torch.eq(self.__partitionsizes,
+                torch.floor(self.__partitionsizes)):all(),
+               'partition sizes should be integer numbers, or sum up to <= 1 '
+            )
          end
+         self.__partitionsizes = self.__partitionsizes:long()
+         assert(
+            self.__partitionsizes:sum() <= self.__dataset:size(),
+            'split cannot involve more samples than dataset size'
+         )
 
-         -- select first partition by default:
-         self.__partition = 1
+         -- select first partition:
+         if initialpartition then self:select(initialpartition) end
       end
 }
 
@@ -106,6 +121,7 @@ SplitDataset.size = argcheck{
    {name='self', type='tnt.SplitDataset'},
    call =
       function(self)
+         assert(self.__partition, 'select a partition before accessing data')
          return self.__partitionsizes[self.__partition]
       end
 }
@@ -115,6 +131,7 @@ SplitDataset.get = argcheck{
    {name='idx', type='number'},
    call =
       function(self, idx)
+         assert(self.__partition, 'select a partition before accessing data')
          assert(idx >= 1 and idx <= self:size(), 'index out of bounds')
          local offset = (self.__partition == 1) and 0 or
             self.__partitionsizes:narrow(1, 1, self.__partition - 1):sum()
