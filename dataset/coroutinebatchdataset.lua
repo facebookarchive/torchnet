@@ -48,8 +48,9 @@ indices before actually fetching them.
    {name = 'perm',      type = 'function', default = function(idx, size) return idx end},
    {name = 'merge',     type = 'function', opt = true},
    {name = 'policy',    type = 'string',   default = 'include-last'},
-   call = function(self, dataset, batchsize, perm, merge, policy)
-      BatchDataset.__init(self, dataset, batchsize, perm, merge, policy)
+   {name='filter', type='function', default=function(sample) return true end},
+   call = function(self, dataset, batchsize, perm, merge, policy, filter)
+      BatchDataset.__init(self, dataset, batchsize, perm, merge, policy, filter)
    end
 }
 
@@ -91,8 +92,14 @@ CoroutineBatchDataset.get = argcheck{
          end
       end
 
+      -- filter the samples:
+      local filtered = {}
+      for n = 1,self.batchsize do
+         if self.filter(samples[n]) then table.insert(filtered, samples[n]) end
+      end
+
       -- return batch:
-      samples = self.makebatch(samples)
+      samples = self.makebatch(filtered)
       collectgarbage()
       return samples
    end
