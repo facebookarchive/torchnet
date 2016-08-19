@@ -147,6 +147,7 @@ local function readindex(self, indexfilename)
    for typename, type in pairs(IndexedDatasetIndexTypes) do
       if type.code == code then
          self.type = type
+         self.typename = typename
       end
    end
    assert(self.type, "unrecognized type")
