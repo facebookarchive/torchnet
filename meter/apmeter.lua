@@ -40,9 +40,8 @@ The `tnt.APMeter` has no parameters to be set.
 APMeter.reset = argcheck{
    {name="self", type="tnt.APMeter"},
    call = function(self)
-      self.n = 0
-      self.scores  = torch.DoubleTensor()
-      self.targets = torch.LongTensor()
+      self.scores  = torch.DoubleTensor(torch.DoubleStorage())
+      self.targets = torch.LongTensor(  torch.LongStorage())
    end
 }
 
@@ -76,23 +75,30 @@ APMeter.add = argcheck{
       assert(torch.eq(torch.eq(target, 0):add(torch.eq(target, 1)), 1):all(),
          'targets should be binary (0 or 1)'
       )
-      if self.scores:nDimension() > 0 then
+      if self.scores:nElement() > 0 then
          assert(output:size(2) == self.scores:size(2),
             'dimensions for output should match previously added examples.'
          )
       end
-      if self.targets:nDimension() > 0 then
+      if self.targets:nElement() > 0 then
          assert(target:size(2) == self.targets:size(2),
             'dimensions for output should match previously added examples.'
          )
       end
 
-      -- store scores and targets in storage:
-      self.scores:resize( self.n + output:size(1), output:size(2))
-      self.targets:resize(self.n + target:size(1), target:size(2))
-      self.scores:narrow( 1, self.n + 1, output:size(1)):copy(output)
-      self.targets:narrow(1, self.n + 1, target:size(1)):copy(target)
-      self.n = self.n + output:size(1)
+      -- make sure storage is of sufficient size:
+      if self.scores:storage():size() < self.scores:nElement() + output:nElement() then
+         local newsize = math.ceil(self.scores:storage():size() * 1.5)
+          self.scores:storage():resize(newsize + output:nElement())
+         self.targets:storage():resize(newsize + output:nElement())
+      end
+
+      -- store scores and targets:
+      local offset = (self.scores:dim() > 0) and self.scores:size(1) or 0
+       self.scores:resize(offset + output:size(1), output:size(2))
+      self.targets:resize(offset + target:size(1), target:size(2))
+       self.scores:narrow(1, offset + 1, output:size(1)):copy(output)
+      self.targets:narrow(1, offset + 1, target:size(1)):copy(target)
    end
 }
 
@@ -101,12 +107,13 @@ APMeter.value = argcheck{
    call = function(self)
 
       -- compute average precision for each class:
+      if not self.scores:nElement() == 0 then return 0 end
       local ap = torch.DoubleTensor(self.scores:size(2)):fill(0)
       local range = torch.range(1, self.scores:size(1), 'torch.DoubleTensor')
       for k = 1,self.scores:size(2) do
 
          -- sort scores:
-         local scores  = self.scores:select( 2, k)
+         local scores  =  self.scores:select(2, k)
          local targets = self.targets:select(2, k)
          local _,sortind = torch.sort(scores, 1, true)
          local truth = targets:index(1, sortind)

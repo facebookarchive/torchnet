@@ -44,8 +44,8 @@ AUCMeter.reset = argcheck{
    {name="self", type="tnt.AUCMeter"},
    call =
       function(self)
-         self.scores  = torch.DoubleTensor()
-         self.targets = torch.LongTensor()
+         self.scores  = torch.DoubleTensor(torch.DoubleStorage())
+         self.targets = torch.LongTensor(  torch.LongStorage())
       end
 }
 
@@ -74,13 +74,19 @@ AUCMeter.add = argcheck{
             'targets should be binary (0 or 1)'
          )
 
+         -- make sure storage is of sufficient size:
+         if self.scores:storage():size() < self.scores:nElement() + output:nElement() then
+            local newsize = math.ceil(self.scores:storage():size() * 1.5)
+             self.scores:storage():resize(newsize + output:nElement())
+            self.targets:storage():resize(newsize + output:nElement())
+         end
+
          -- store scores and targets in storage:
-         local offset1 = self.scores:nElement()
-         local offset2 = self.targets:nElement()
-         self.scores:resize( offset1 + output:nElement())
-         self.targets:resize(offset2 + target:nElement())
-         self.scores:narrow( 1, offset1 + 1, output:nElement()):copy(output)
-         self.targets:narrow(1, offset2 + 1, target:nElement()):copy(target)
+         local offset = self.scores:nElement()
+          self.scores:resize(offset + output:nElement())
+         self.targets:resize(offset + target:nElement())
+          self.scores:narrow(1, offset + 1, output:nElement()):copy(output)
+         self.targets:narrow(1, offset + 1, target:nElement()):copy(target)
       end
 }
 
@@ -90,6 +96,7 @@ AUCMeter.value = argcheck{
       function(self)
 
          -- sort the scores:
+         if not self.scores:nElement() == 0 then return 0.5 end
          local scores, sortind = torch.sort(self.scores, 1, true)
 
          -- construct the ROC curve:
