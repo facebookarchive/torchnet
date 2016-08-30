@@ -26,7 +26,7 @@ local function getIterator(mode)
          local mnist = require 'mnist'
          local dataset = mnist[mode .. 'dataset']()
          dataset.data = dataset.data:reshape(dataset.data:size(1),
-            dataset.data:size(2) * dataset.data:size(3)):double()
+            dataset.data:size(2) * dataset.data:size(3)):double():div(256)
 
          -- return batches of data:
          return tnt.BatchDataset{
