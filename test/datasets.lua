@@ -18,6 +18,11 @@ function test.ListDataset()
    tester:eq(d:size(), 3)
    tester:eq(d:get(1), 1)
 
+   local v = tds.vec({ 1, 2, 3})
+   local d = tnt.ListDataset(v, identity)
+   tester:eq(d:size(), 3)
+   tester:eq(d:get(1), 1)
+
    local tbl = {1, 2, 3}
    local d = tnt.ListDataset(tbl, identity)
    tester:eq(d:size(), 3)
