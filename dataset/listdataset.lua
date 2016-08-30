@@ -62,6 +62,20 @@ ListDataset.__init = argcheck{
 
 ListDataset.__init = argcheck{
    {name='self', type='tnt.ListDataset'},
+   {name='list', type='tds.Vec'},
+   {name='load', type='function'},
+   {name='path', type='string', opt=true},
+   call =
+      function(self, list, load, path)
+         Dataset.__init(self)
+         self.list = list
+         self.load = load
+         self.path = path
+      end
+}
+
+ListDataset.__init = argcheck{
+   {name='self', type='tnt.ListDataset'},
    {name='list', type='torch.LongTensor'},
    {name='load', type='function'},
    {name='path', type='string', opt=true},
