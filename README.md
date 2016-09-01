@@ -7,10 +7,10 @@ of abstractions aiming at encouraging code re-use as well as encouraging
 modular programming.
 
 At the moment, *torchnet* provides four set of important classes:
-  - Dataset: handling and pre-processing data in various ways.
-  - Engine: training/testing machine learning algorithm.
-  - Meter: meter performance or any other quantity.
-  - Log: output performance or any other string to file / disk in a consistent manner.
+  - [`Dataset`](#tntdataset): handling and pre-processing data in various ways.
+  - [`Engine`](#tntengine): training/testing machine learning algorithm.
+  - [`Meter`](#tntmeter): meter performance or any other quantity.
+  - [`Log`](#tntlog): output performance or any other string to file / disk in a consistent manner.
 
 For an overview of the *torchnet* framework, please also refer to [this paper](https://lvdmaaten.github.io/publications/papers/Torchnet_2016.pdf).
 
@@ -169,9 +169,9 @@ For example, the following code:
 is equivalent to compose the transformations stored in [1] and [2], i.e.,
 defining the following transformation:
 ```lua
-> f =  function(x) return 2*x + 10 end ```
+> f =  function(x) return 2*x + 10 end
+ ```
 Note that transformations stored with keys `foo` and `4` are ignored.
-```
 <a name = "transform.merge">
 #### transform.merge(transforms)
 ```
@@ -713,10 +713,10 @@ size.
 If `size` is not provided, then the new dataset will have the same size
 than the underlying one.
 
-By default `sampler(dataset, idx)` is the identity. `dataset` corresponds
-to the underlying dataset provided at construction, and `idx` may take a
-value between 1 to `size`. It must return an index in the range acceptable
-for the underlying dataset.
+By default `sampler(dataset, idx)` is the identity, simply `return`ing `idx`.
+`dataset` corresponds to the underlying dataset provided at construction, and
+`idx` may take a value between 1 to `size`. It must return an index in the range
+acceptable for the underlying dataset.
 
 Purpose: shuffling data, re-weighting samples, getting a subset of the
 data. Note that an important sub-class is ([tnt.ShuffleDataset](#ShuffleDataset)),
@@ -795,7 +795,7 @@ construction.
 
 The current dataset size changes accordingly, as well as the samples returned
 by the `get()` method.
-#### Dataset Iterators
+### Dataset Iterators
 
 It is easy to iterate over datasets using a for loop. However, sometimes
 one wants to filter out samples in a on-the-fly manner or thread sample fetching.
@@ -815,7 +815,7 @@ for sample in iterator:run() do
 end
 ```
 
-Iterators implement the __call event, so one might also use the `()` operator:
+Iterators implement the `__call` event, so one might also use the `()` operator:
 ```lua
 for sample in iterator() do
   <do something with sample>
@@ -823,7 +823,7 @@ end
 ```
 
 <a name="DatasetIterator">
-##### tnt.DatasetIterator(self, dataset[, perm][, filter][, transform])
+#### tnt.DatasetIterator(self, dataset[, perm][, filter][, transform])
 ```
 ({
    self      = tnt.DatasetIterator  -- 
@@ -848,12 +848,12 @@ samples. It returns a modified version of the given `sample`. It is the
 identity by default. It is often more interesting to use
 [tnt.TransformDataset](#TransformDataset) for that purpose.
 <a name="DatasetIterator.exec">
-##### tnt.DatasetIterator.exec(tnt.DatasetIterator, name, ...)
+#### tnt.DatasetIterator.exec(tnt.DatasetIterator, name, ...)
 
 Execute the given method `name` on the underlying dataset, passing it the
 subsequent arguments, and returns what the `name` method returns.
 <a name="ParallelDatasetIterator">
-##### tnt.ParallelDatasetIterator(self[, init], closure, nthread[, perm][, filter][, transform][, ordered])
+#### tnt.ParallelDatasetIterator(self[, init], closure, nthread[, perm][, filter][, transform][, ordered])
 ```
 ({
    self      = tnt.ParallelDatasetIterator  -- 
@@ -912,7 +912,7 @@ and to make sure you require all the appropriate torch packages needed to (de-)s
 For more information, check out the [threads package](https://github.com/torch/threads),
 on which `tnt.ParallelDatasetIterator` relies.
 <a name="ParallelDatasetIterator.execSingle">
-##### tnt.ParallelDatasetIterator.execSingle(tnt.DatasetIterator, name, ...)
+#### tnt.ParallelDatasetIterator.execSingle(tnt.DatasetIterator, name, ...)
 
 Execute the given method `name` on the dataset corresponding to the first
 available thread, passing it the subsequent arguments, and returns what the
@@ -925,7 +925,7 @@ For example:
 ```
 will print the size of the dataset loaded in the first available thread.
 <a name="ParallelDatasetIterator.exec">
-##### tnt.ParallelDatasetIterator.exec(tnt.DatasetIterator, name, ...)
+#### tnt.ParallelDatasetIterator.exec(tnt.DatasetIterator, name, ...)
 
 Execute the given method `name` on the underlying datasets in each thread,
 passing to each of them the subsequent arguments, and returns a table
@@ -943,9 +943,9 @@ will print the size of the datasets loaded in each thread.
 ### tnt.Engine
 
 In experimenting with different models and datasets, the underlying training
-procedure is often the same. The Engine module provides the boilerplate logic
+procedure is often the same. The `Engine` module provides the boilerplate logic
 necessary for the training and testing of models. This might include conducting
-the interaction between model (nn.Module), `tnt.DatasetIterator`s,
+the interaction between model (`nn.Module`), `tnt.DatasetIterator`s,
 `nn.Criterion`s, and `tnt.Meter`s.
 
 An instance `engine` of a `tnt.Engine()` implements two main methods:
@@ -955,7 +955,7 @@ An instance `engine` of a `tnt.Engine()` implements two main methods:
   * `engine:test()`,  for evaluating a model on data
         (optionally with respect to a `nn.Criterion`).
 
-The Engine can be implemented for any common underlying training and testing
+The `Engine` can be implemented for any common underlying training and testing
 procedure involving a model and data. It can also be designed to allow user
 control after certain events such as forward prop, criterion evaluation, or the
 end of an epoch, by using coroutines (see `tnt.SGDEngine`).
@@ -963,30 +963,70 @@ end of an epoch, by using coroutines (see `tnt.SGDEngine`).
 
 ### tnt.SGDEngine
 
-The SGDEngine module implements the Stochastic Gradient Descent training
+The `SGDEngine` module implements the Stochastic Gradient Descent training
 procedure in `train`, including data sampling, forward prop, back prop, and
 parameter updates. It also operates as a coroutine allowing a user control
  (i.e. increment some sort of `tnt.Meter`) at events such as 'start',
 'start-epoch', 'forward', 'forward-criterion', 'backward', etc.
+The available hooks are the following:
+```lua
+hooks = {
+   ['onStart']             = function() end, -- Right before training
+   ['onStartEpoch']        = function() end, -- Before new epoch
+   ['onSample']            = function() end, -- After getting a sample
+   ['onForward']           = function() end, -- After model:forward
+   ['onForwardCriterion']  = function() end, -- After criterion:forward
+   ['onBackwardCriterion'] = function() end, -- After criterion:backward
+   ['onBackward']          = function() end, -- After model:backward
+   ['onUpdate']            = function() end, -- After UpdateParameters
+   ['onEndEpoch']          = function() end, -- Right before completing epoch
+   ['onEnd']               = function() end, -- After training
+}
+```
+To specify a new closure for a given hook, we can access to it with
+`engine.hooks.<onEvent>`. For example, we could reset a `Meter` before every
+epoch by:
+```lua
+local engine = tnt.SGDEngine()
+local meter  = tnt.AverageValueMeter()
+engine.hooks.onStartEpoch = function(state)
+   meter:reset()
+end
+```
 
-Accordingly, `train` requires a network (nn.Module), a criterion expressing the
-loss function (nn.Criterion), a dataset iterator (tnt.DatasetIterator), and a
+Accordingly, `train` requires a network (`nn.Module`), a criterion expressing the
+loss function (`nn.Criterion`), a dataset iterator (`tnt.DatasetIterator`), and a
 learning rate, at the minimum. The `test` function allows for simple evaluation
 of a model on a dataset.
 
 A `state` is maintained for external access to outputs and parameters of modules
-as well as sampled data.
+as well as sampled data. The content of the `state` table is the following, where
+the passed values come from the arguments of `engine:train()`:
+```lua
+state = {
+   ['network']     = network,
+   ['criterion']   = criterion,
+   ['iterator']    = iterator,
+   ['lr']          = lr,
+   ['lrcriterion'] = lrcriterion,
+   ['maxepoch']    = maxepoch,
+   ['sample']      = {},
+   ['epoch']       = 0, -- epoch done so far
+   ['t']           = 0, -- samples seen so far
+   ['training']    = true
+}
+```
 
 ### tnt.OptimEngine
 
-The OptimEngine module wraps the optimization functions from
+The `OptimEngine` module wraps the optimization functions from
 https://github.com/torch/optim. At the start of training, the engine will call
 `getParameters` on the provided network.
 
 The `train` method requires the following parameters in addition to the
-SGDEngine.train parameters:
+`SGDEngine.train` parameters:
 
-  * `optimMethod` the optimization function (e.g optim.sgd)
+  * `optimMethod` the optimization function (e.g `optim.sgd`)
   * `config` a table with configuration parameters for the optimizer
 
 Example:
@@ -1003,7 +1043,7 @@ Example:
      },
   }
 ```
-#### Meters
+### tnt.Meter
 
 When training a model, you generally would like to measure how the model is
 performing. Specifically, you may want to measure the average processing time
@@ -1071,9 +1111,9 @@ The `tnt.APMeter` has no parameters to be set.
 })
 ```
 
-The `tnt.AverageValueMeter` measures the average value of any collection of
-numbers that are `add`ed to it. It is useful, for instance, to measure the
-average loss over a collection of examples.
+The `tnt.AverageValueMeter` measures and returns the average value and the
+standard deviation of any collection of numbers that are `add`ed to it. It is
+useful, for instance, to measure the average loss over a collection of examples.
 
 The `add()` function expects as input a Lua number `value`, which is the value
 that needs to be added to the list of values to average. It also takes as input
@@ -1404,43 +1444,44 @@ a specific level k can be obtained by calling `value(k)`. Note that the level
 
 Please note that the number of outputs and relevances C should always be at
 least as high as the highest NDCG level k that the meter is computing.
-### Log
+### tnt.Log
 
-Log classes act as tables indexed by string keys. Allowed keys must be
+`Log` classes act as tables indexed by string keys. Allowed keys must be
 provided at construction. A special key `__status__` can be also set the
 convenience method `log:status()` to record basic messages.
 
-Viewers closures can be attached to a Log, and called at different events:
-   * `onSet(log, key, value)`: when setting a key to the Log with `log:set{}`.
+Viewers closures can be attached to a `Log`, and called at different events:
+   * `onSet(log, key, value)`: when setting a key to the `Log` with `log:set{}`.
    * `onGet(log, key)`: when querying a key with `log:get()`.
-   * `onFlush(log)`: when flushing out the stored data of the Log with `log:flush()`.
-   * `onClose(log)`: when closing a Log with `log:close()`.
+   * `onFlush(log)`: when flushing out the stored data of the `Log` with `log:flush()`.
+   * `onClose(log)`: when closing a `Log` with `log:close()`.
 
 Typical viewer closures are `text` or `json`, which allow to write to disk
-or to the console a subset of the keys stored by the Log, in a particular
+or to the console a subset of the keys stored by the `Log`, in a particular
 format. The special viewer closure `status` is made to be called on `set()`
 events, and will print out only status records.
 
 A typical use case would be the following:
 ```lua
+tnt = require 'torchnet'
 
 -- require the viewers we want
-local logtext = require 'torchnet.log.view.text'
-local logstatus = require 'torchnet.log.view.status'
+logtext = require 'torchnet.log.view.text'
+logstatus = require 'torchnet.log.view.status'
 
-local log = tnt.Log{
+log = tnt.Log{
    keys = {"loss", "accuracy"},
    onFlush = {
       -- write out all keys in "log" file
-      logtext{filename=string.format('%s/log', rundir), keys={"loss", "accuracy"}, format={"%10.5f", "%3.2f"}},
+      logtext{filename='log.txt', keys={"loss", "accuracy"}, format={"%10.5f", "%3.2f"}},
       -- write out loss in a standalone file
-      logtext{filename=string.format('%s/loss', rundir), keys={"loss"}}
+      logtext{filename='loss.txt', keys={"loss"}},
       -- print on screen too
-      logtext{keys=logkeys, keys=keys={"loss", "accuracy"}},
+      logtext{keys={"loss", "accuracy"}},
    },
    onSet = {
       -- add status to log
-      logstatus{filename=string.format('%s/log', rundir)},
+      logstatus{filename='log.txt'},
       -- print status to screen
       logstatus{},
    }
@@ -1471,7 +1512,7 @@ log:flush()
 }
 ```
 
-Creates a new Log with allowed keys (strings) `keys`.  Specifiy event
+Creates a new `Log` with allowed keys (strings) `keys`.  Specifiy event
 closures with table of functions `onClose`, `onFlush`, `onGet` and `onSet`,
 which will be called when `close()`, `flush()`, `get()`, and `set{}`
 methods will be called, respectively.
@@ -1559,20 +1600,20 @@ Attach a set of functions (provided in a table) to a given event.
 }
 ```
 
-Creates a new RemoteLog with allowed keys (strings) `keys`.  Specifiy event
+Creates a new `RemoteLog` with allowed keys (strings) `keys`.  Specifiy event
 closures with table of functions `onClose`, `onFlush`, `onGet` and `onSet`,
 which will be called when `close()`, `flush()`, `get()`, and `set{}`
 methods will be called, respectively.
 
-If `server` is not provided, RemoteLog creates a server which can later be
+If `server` is not provided, `RemoteLog` creates a server which can later be
 reached at the address provided by `server()`.
 
-If `server` is provided, RemoteLog will dialog with the given server to
-store any values to be recorded by the Log (or query any of these values).
+If `server` is provided, `RemoteLog` will dialog with the given server to
+store any values to be recorded by the `Log` (or query any of these values).
 
-A given server can record different Log, with different names. The default name
+A given server can record different `Log`, with different names. The default name
 is `default`, but can be specified with the `name` option.
 
-At this time, it is important to call the `close()` method when RemoteLog
+At this time, it is important to call the `close()` method when `RemoteLog`
 is not used anymore (before quitting the application).
 

@@ -15,14 +15,14 @@ doc[[
 
 ### tnt.OptimEngine
 
-The OptimEngine module wraps the optimization functions from
+The `OptimEngine` module wraps the optimization functions from
 https://github.com/torch/optim. At the start of training, the engine will call
 `getParameters` on the provided network.
 
 The `train` method requires the following parameters in addition to the
-SGDEngine.train parameters:
+`SGDEngine.train` parameters:
 
-  * `optimMethod` the optimization function (e.g optim.sgd)
+  * `optimMethod` the optimization function (e.g `optim.sgd`)
   * `config` a table with configuration parameters for the optimizer
 
 Example:

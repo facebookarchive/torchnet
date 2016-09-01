@@ -18,9 +18,9 @@ AverageValueMeter.__init = argcheck{
 #### tnt.AverageValueMeter(@ARGP)
 @ARGT
 
-The `tnt.AverageValueMeter` measures the average value of any collection of
-numbers that are `add`ed to it. It is useful, for instance, to measure the
-average loss over a collection of examples.
+The `tnt.AverageValueMeter` measures and returns the average value and the
+standard deviation of any collection of numbers that are `add`ed to it. It is
+useful, for instance, to measure the average loss over a collection of examples.
 
 The `add()` function expects as input a Lua number `value`, which is the value
 that needs to be added to the list of values to average. It also takes as input
