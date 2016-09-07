@@ -112,8 +112,13 @@ by the `get()` method.
    {name='partition', type='string'},
    call =
       function(self, partition)
-         self.__partition = self.__names[partition]
-         if not self.__partition then error('partition not found') end
+         local id = self.__names[partition]
+         if not id then error('partition not found') end
+         if self.__partition then
+            self.__partition[1] = id
+         else
+            self.__partition = torch.LongTensor{id}
+         end
       end
 }
 
@@ -122,7 +127,7 @@ SplitDataset.size = argcheck{
    call =
       function(self)
          assert(self.__partition, 'select a partition before accessing data')
-         return self.__partitionsizes[self.__partition]
+         return self.__partitionsizes[self.__partition[1]]
       end
 }
 
@@ -133,8 +138,8 @@ SplitDataset.get = argcheck{
       function(self, idx)
          assert(self.__partition, 'select a partition before accessing data')
          assert(idx >= 1 and idx <= self:size(), 'index out of bounds')
-         local offset = (self.__partition == 1) and 0 or
-            self.__partitionsizes:narrow(1, 1, self.__partition - 1):sum()
+         local offset = (self.__partition[1] == 1) and 0 or
+            self.__partitionsizes:narrow(1, 1, self.__partition[1] - 1):sum()
          return self.__dataset:get(offset + idx)
       end
 }
