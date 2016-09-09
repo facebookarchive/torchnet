@@ -770,14 +770,15 @@ in use.
 
 The Lua hash table `partitions` is of the form (key, value) where key is a
 user-chosen string naming the partition, and value is a number representing
-the weight (in size) of the corresponding partition.
+the weight (as a number between 0 and 1) or the size (in number of samples)
+of the corresponding partition.
 
-The sum of the partition weights may or may not sum to one
-(`tnt.SplitDataset` will make them sum to one!).
-
-Partionning is achieved linearly (no shuffling). See
+Partioning is achieved linearly (no shuffling). See
 [tnt.ShuffleDataset](#ShuffleDataset) if you want to shuffle the dataset
 before partitioning.
+
+The optional variable `initialpartition` specifies the partition that is loaded
+initially.
 
 Purpose: useful in machine learning to perform validation procedures.
 <a name="SplitDataset.select">
