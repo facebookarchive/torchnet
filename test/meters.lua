@@ -272,6 +272,43 @@ function test.mAPMeter()
    )
 end
 
+
+function test.MovingAverageValueMeter()
+   -- Moving average meter with windowsize = 3
+   local mtr = tnt.MovingAverageValueMeter(3)
+
+   mtr:add(1)
+   local avg, var = mtr:value()
+
+   tester:eq(avg, 1)
+   tester:eq(var, 0)
+
+   mtr:add(3)
+   avg, var = mtr:value()
+
+   tester:eq(avg, 2)
+   tester:eq(var, math.sqrt(2))
+
+   mtr:add(5)
+   avg, var = mtr:value()
+
+   tester:eq(avg, 3)
+   tester:eq(var, 2)
+
+   mtr:add(4)
+   avg, var = mtr:value()
+
+   tester:eq(avg, 4)
+   tester:eq(var, 1)
+
+   mtr:add(0)
+   avg, var = mtr:value()
+
+   tester:eq(avg, 3)
+   tester:eq(var, math.sqrt(7))
+end
+
+
 function test.NDCGMeter()
    local mtr = tnt.NDCGMeter{K = {6}}
 
