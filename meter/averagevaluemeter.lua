@@ -52,8 +52,9 @@ AverageValueMeter.add = argcheck{
    {name="n", type="number", default=1},
    call =
       function(self, value, n)
-         self.sum = self.sum + value
-         self.var = self.var + value * value
+         assert(n >= 0, 'example weights cannot be negative')
+         self.sum = self.sum + n * value
+         self.var = self.var + n * value * value
          self.n = self.n + n
       end
 }
