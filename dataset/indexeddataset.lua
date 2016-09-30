@@ -50,6 +50,10 @@ specified size.
 Archives and/or indexes can also be memory mapped with the `mmap` and
 `mmapidx` flags.
 
+If `standalone` is true, the constructor expects only one field to be
+provided. The i-th sample returned by the dataset will be the item found at
+the archive at index i. This is particularly useful with `table` archives.
+
 ]],
    noordered = true,
    {name='self', type='tnt.IndexedDataset'},
@@ -58,8 +62,9 @@ Archives and/or indexes can also be memory mapped with the `mmap` and
    {name='maxload', type='number', opt=true},
    {name='mmap', type='boolean', default=false},
    {name='mmapidx', type='boolean', default=false},
+   {name='standalone', type='boolean', default=false},
    call =
-      function(self, fields, path, maxload, mmap, mmapidx)
+      function(self, fields, path, maxload, mmap, mmapidx, standalone)
          self.__fields = {}
          if path then
             for _, fieldname in ipairs(fields) do
@@ -84,6 +89,7 @@ Archives and/or indexes can also be memory mapped with the `mmap` and
             end
          end
          assert(#self.__fields > 0, 'fields should not be empty')
+         assert(not standalone or #self.__fields == 1, 'only one field expected with standalone flag at true')
          local size
          for _, field in ipairs(self.__fields) do
             field.data = tnt.IndexedDatasetReader(field.idx, field.bin, mmap, mmapidx)
@@ -96,6 +102,7 @@ Archives and/or indexes can also be memory mapped with the `mmap` and
          if maxload and maxload > 0 and maxload < size then
             size = maxload
          end
+         self.__standalone = standalone
          self.__size = size
          print(string.format("| IndexedDataset: loaded %s with %d examples", path or '', size))
       end
@@ -115,11 +122,15 @@ IndexedDataset.get = argcheck{
    call =
       function(self, idx)
          assert(idx >= 1 and idx <= self.__size, 'index out of bound')
-         local sample = {}
-         for _, field in ipairs(self.__fields) do
-            sample[field.name] = field.data:get(idx)
+         if self.__standalone then
+            return self.__fields[1].data:get(idx)
+         else
+            local sample = {}
+            for _, field in ipairs(self.__fields) do
+               sample[field.name] = field.data:get(idx)
+            end
+            return sample
          end
-         return sample
       end
 }
 

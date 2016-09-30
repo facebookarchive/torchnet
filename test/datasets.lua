@@ -256,6 +256,32 @@ function test.IndexedDataset()
       tables = {'a', 'b', 4 },
    })
 
+   local d = tnt.IndexedDataset{
+      path = tmpdir,
+      fields = {'tables'},
+      standalone = true
+   }
+   tester:eq(d:size(), 10)
+   for i=1,10 do
+      tester:eq(
+         d:get(i),
+         {'a', 'b', i }
+      )
+   end
+
+   local d = tnt.IndexedDataset{
+      path = tmpdir,
+      fields = {'ints'},
+      standalone = true
+   }
+   tester:eq(d:size(), 10)
+   for i=1,10 do
+      tester:eq(
+         d:get(i),
+         torch.range(1, i):int()
+      )
+   end
+
    assert(os.remove(paths.concat(tmpdir, 'ints.idx')))
    assert(os.remove(paths.concat(tmpdir, 'ints.bin')))
    assert(os.remove(paths.concat(tmpdir, 'tables.idx')))
