@@ -77,7 +77,7 @@ MultiLabelConfusionMeter.add = argcheck{
             output = output:view(1, output:size(1))
          end
          if target:nDimension() == 1 then
-            target = target:view(1, output:size(1))
+            target = target:view(1, target:size(1))
          end
          assert(
             target:nDimension() == output:nDimension() and
