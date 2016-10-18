@@ -177,48 +177,77 @@ end
 function test.APMeter()
    local mtr = tnt.APMeter()
 
-   local target = torch.Tensor{0,1,0,1}
-   local output = torch.Tensor{.1,.2,.3,4}
-   mtr:add(output, target)
+   local target = torch.Tensor{0,   1, 0,   1}
+   local output = torch.Tensor{.1,  0.2, 0.3, 4}
+   local weight = torch.Tensor{0.5, 1.0, 2.0, 0.1}
+   mtr:add(output, target, weight)
 
    local ap = mtr:value()
-   tester:eq(ap[1], (1*1 + 0*1/2 + 2*1/3 + 0*1/4)/2)
+   tester:eq(
+      ap[1], (1*0.1/0.1 + 0*2.0/2.1 + 1.1*1/3.1+ 0*1/4)/2.0,
+      'aptest1 failed'
+   )
 
    mtr:reset()
+   mtr:add(output, target)
+   ap = mtr:value()
+   tester:eq(ap[1], (1*1/1 + 0*1/2 + 2*1/3 + 0*1/4)/2, 'aptest2 failed')
 
    target = torch.Tensor{0,1,0,1}
    output = torch.Tensor{4,3,2,1}
-   mtr:add(output, target)
-
-   ap = mtr:value()
-   tester:eq(ap[1], (0*1 + 1*1/2 + 0*1/3 + 2*1/4)/2)
+   weight = torch.Tensor{1,2,3,4}
 
    mtr:reset()
+   mtr:add(output, target, weight)
+   ap = mtr:value()
+   tester:eq(ap[1], (0*1/1 + 1*2/3 + 2*0/6 + 6*1/10)/2, 'aptest3 failed')
+
+   mtr:reset()
+   mtr:add(output, target)
+   ap = mtr:value()
+   tester:eq(ap[1], (0*1 + 1*1/2 + 0*1/3 + 2*1/4)/2, 'aptest4 failed')
+
    target = torch.Tensor{0,1,0,1}
    output = torch.Tensor{1,4,2,3}
-   mtr:add(output, target)
-
+   weight = torch.Tensor{1,2,3,4}
+   mtr:reset()
+   mtr:add(output, target, weight)
    ap = mtr:value()
-   tester:eq(ap[1], (1*1 + 2*1/2 + 0*1/3 + 0*1/4)/2)
+   tester:eq(ap[1], (4*1/4 + 6*1/6 + 0*6/9 + 0*6/10)/2, 'aptest5 failed')
 
    mtr:reset()
+   mtr:add(output, target)
+   ap = mtr:value()
+   tester:eq(ap[1], (1*1 + 2*1/2 + 0*1/3 + 0*1/4)/2, 'aptest6 failed')
+
    target = torch.Tensor{0,0,0,0}
    output = torch.Tensor{1,4,2,3}
-   mtr:add(output, target)
+   weight = torch.Tensor{1.0, 0.1, 0.0, 0.5}
+   mtr:reset()
+   mtr:add(output, target, weight)
 
    ap = mtr:value()
    tester:eq(ap[1], 0)
 
    mtr:reset()
+   mtr:add(output, target)
+   ap = mtr:value()
+   tester:eq(ap[1], 0)
+
    target = torch.Tensor{1,1,0}
    output = torch.Tensor{3,1,2}
-   mtr:add(output, target)
-
+   weight = torch.Tensor{1,0.1,3}
+   mtr:reset()
+   mtr:add(output, target, weight)
    ap = mtr:value()
-   tester:eq(ap[1], (1*1 + 0*1/2 + 2*1/3)/2)
+   tester:eq(ap[1], (1*1/1 + 1*0/4 + 1.1/4.1)/2, 'aptest7 failed')
+
+   mtr:reset()
+   mtr:add(output, target)
+   ap = mtr:value()
+   tester:eq(ap[1], (1*1 + 0*1/2 + 2*1/3)/2, 'aptest8 failed')
 
    -- Test multiple K:s
-   mtr:reset()
    target = torch.Tensor{
       {0,1,0,1},
       {0,1,0,1}
@@ -227,15 +256,32 @@ function test.APMeter()
       {.1,.2,.3,4},
       {4,3,2,1}
    }:transpose(1,2)
-   mtr:add(output, target)
+   weight = torch.Tensor{
+     {1.0, 0.5, 2.0, 3.0},
+   }:transpose(1,2)
 
+   mtr:reset()
+   mtr:add(output, target, weight)
+   ap = mtr:value()
+   tester:eq(
+      ap,
+      torch.DoubleTensor{
+         (1*3.0/3.0 + 0*3.0/5.0 + 3.5*1/5.5 + 0*3.5/6.5)/2,
+         (0*1.0/1.0 + 1*0.5/1.5 + 0*0.5/3.5 + 1*3.5/6.5)/2
+      },
+      'aptest9 failed'
+   )
+
+   mtr:reset()
+   mtr:add(output, target)
    ap = mtr:value()
    tester:eq(
       ap,
       torch.DoubleTensor{
          (1*1 + 0*1/2 + 2*1/3 + 0*1/4)/2,
          (0*1 + 1*1/2 + 0*1/3 + 2*1/4)/2
-      }
+      },
+      'aptest10 failed'
    )
 end
 
@@ -245,10 +291,16 @@ function test.mAPMeter()
 
    local target = torch.Tensor{0,1,0,1}
    local output = torch.Tensor{.1,.2,.3,4}
+   local weight = torch.Tensor{0.5, 1.0, 2.0, 0.1}
    mtr:add(output, target)
 
    local ap = mtr:value()
    tester:eq(ap, (1*1 + 0*1/2 + 2*1/3 + 0*1/4)/2)
+
+   mtr:reset()
+   mtr:add(output, target, weight)
+   ap = mtr:value()
+   tester:eq(ap, (1*0.1/0.1 + 0*2.0/2.1 + 1.1*1/3.1+ 0*1/4)/2.0)
 
    -- Test multiple K:s
    mtr:reset()
@@ -260,6 +312,10 @@ function test.mAPMeter()
       {.1,.2,.3,4},
       {4,3,2,1}
    }:transpose(1,2)
+   weight = torch.Tensor{
+     {1.0, 0.5, 2.0, 3.0},
+   }:transpose(1,2)
+
    mtr:add(output, target)
 
    ap = mtr:value()
@@ -268,6 +324,17 @@ function test.mAPMeter()
       torch.DoubleTensor{
          (1*1 + 0*1/2 + 2*1/3 + 0*1/4)/2,
          (0*1 + 1*1/2 + 0*1/3 + 2*1/4)/2
+      }:mean()
+   )
+
+   mtr:reset()
+   mtr:add(output, target, weight)
+   ap = mtr:value()
+   tester:eq(
+      ap,
+      torch.DoubleTensor{
+         (1*3.0/3.0 + 0*3.0/5.0 + 3.5*1/5.5 + 0*3.5/6.5)/2,
+         (0*1.0/1.0 + 1*0.5/1.5 + 0*0.5/3.5 + 1*3.5/6.5)/2
       }:mean()
    )
 end

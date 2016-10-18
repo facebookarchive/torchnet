@@ -21,13 +21,14 @@ mAPMeter.__init = argcheck{
 
 The `tnt.mAPMeter` measures the mean average precision over all classes.
 
-The `tnt.mAPMeter` is designed to operate on `NxK` Tensors `output` and `target`
-where (1) the `output` contains model output scores for `N` examples and `K`
-classes that ought to be higher when the model is more convinced that the
-example should be positively labeled, and smaller when the model believes the
-example should be negatively labeled (for instance, the output of a sigmoid
-function); and (2) the `target` contains only values 0 (for negative examples)
-and 1 (for positive examples).
+The `tnt.mAPMeter` is designed to operate on `NxK` Tensors `output` and
+`target`, and optionally a `Nx1` Tensor weight where (1) the `output` contains
+model output scores for `N` examples and `K` classes that ought to be higher
+when the model is more convinced that the example should be positively labeled,
+and smaller when the model believes the example should be negatively labeled
+(for instance, the output of a sigmoid function); (2) the `target` contains
+only values 0 (for negative examples) and 1 (for positive examples); and (3)
+the `weight` ( > 0) reprsents weight for each sample.
 
 The `tnt.mAPMeter` has no parameters to be set.
 ]],
@@ -48,8 +49,9 @@ mAPMeter.add = argcheck{
    {name="self", type="tnt.mAPMeter"},
    {name="output", type="torch.*Tensor"},
    {name="target", type="torch.*Tensor"},
-   call = function(self, output, target)
-      self.apmeter:add{output = output, target = target}
+   {name="weight", type="torch.*Tensor", opt=true},
+   call = function(self, output, target, weight)
+      self.apmeter:add{output = output, target = target, weight = weight}
    end
 }
 
