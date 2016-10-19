@@ -89,6 +89,8 @@ on which `tnt.ParallelDatasetIterator` relies.
          local sample -- beware: do not put this line in loop()
          local sampleOrigIdx
          function self.run()
+            -- make sure we are not in the middle of something
+            threads:synchronize()
             -- loading size of the dataset each time run() is called
             threads:addjob(
                 function()
