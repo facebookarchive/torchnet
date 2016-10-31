@@ -283,6 +283,15 @@ function test.APMeter()
       },
       'aptest10 failed'
    )
+
+   mtr:reset()
+   output = torch.DoubleTensor(5, 4):fill(.25)
+   target = torch.LongTensor(5, 4):fill(1)
+   mtr:add(output, target)
+   output = torch.DoubleTensor(1, 4):fill(.25)
+   target = torch.LongTensor(1, 4):fill(1)
+   mtr:add(output, target)
+   tester:assert(mtr:value(), 'aptest11 failed')
 end
 
 

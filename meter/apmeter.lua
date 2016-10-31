@@ -55,11 +55,8 @@ APMeter.add = argcheck{
    call = function(self, output, target, weight)
 
       -- assertions on the input:
-      target = target:squeeze()
-      output = output:squeeze()
-
       if weight then
-        weight = weight:squeeze()
+         weight = weight:squeeze()
       end
       if output:nDimension() == 1 then
          output = output:view(output:size(1), 1)
@@ -158,6 +155,7 @@ APMeter.value = argcheck{
 
          -- compute precision curve:
          local precision = tp:cdiv(range)
+
          -- compute average precision:
          ap[k] = precision[truth:byte()]:sum() / math.max(truth:sum(), 1)
       end
