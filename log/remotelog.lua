@@ -170,7 +170,7 @@ is not used anymore (before quitting the application).
    {name="onSet", type="table", opt=true},
    call =
       function(self, keys, server, name, onClose, onFlush, onGet, onSet)
-         self.__server = server
+         self.__servername = server
          self.__name = name
          Log.__init(
             self,
