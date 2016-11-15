@@ -82,8 +82,8 @@ This function do a deep copy of a table.
 #### tnt.utils.table.merge(dst, src)
 ```
 ({
-   dst = table  -- 
-   src = table  -- 
+   dst = table  --
+   src = table  --
 })
 ```
 
@@ -98,8 +98,8 @@ is preferred.
 #### tnt.utils.table.foreach(tbl, closure[, recursive])
 ```
 ({
-   tbl       = table     -- 
-   closure   = function  -- 
+   tbl       = table     --
+   closure   = function  --
   [recursive = boolean]  --  [default=false]
 })
 ```
@@ -117,7 +117,7 @@ Check if a table can be merged into a tensor.
 #### tnt.utils.table.mergetensor(tbl)
 ```
 ({
-   tbl = table  -- 
+   tbl = table  --
 })
 ```
 
@@ -144,7 +144,7 @@ must not be transformed.
 #### transform.compose(transforms)
 ```
 ({
-   transforms = table  -- 
+   transforms = table  --
 })
 ```
 
@@ -176,7 +176,7 @@ Note that transformations stored with keys `foo` and `4` are ignored.
 #### transform.merge(transforms)
 ```
 ({
-   transforms = table  -- 
+   transforms = table  --
 })
 ```
 
@@ -213,7 +213,7 @@ existing table of functions.
 #### transform.tableapply(transform)
 ```
 ({
-   transform = function  -- 
+   transform = function  --
 })
 ```
 
@@ -269,7 +269,7 @@ Then apply this function will produce:
 #### transform.makebatch([merge])
 ```
 ({
-  [merge = function]  -- 
+  [merge = function]  --
 })
 ```
 
@@ -283,11 +283,11 @@ simply concatenating the table into a tensor directly.
 
 This function uses the [compose](#transform.compose) transform to apply
 successive transformations.
-<a name = "transform.perm">
-#### transform.perm(size)
+<a name = "transform.randperm">
+#### transform.randperm(size)
 ```
 ({
-   size = number  -- 
+   size = number  --
 })
 ```
 
@@ -298,7 +298,7 @@ Once the vector created, this function can be used to call a specific indices in
 
 For example:
 ```lua
-> p = transform.perm(3)
+> p = transform.randperm(3)
 ```
 creates a function `p` which contains a permutation of indices:
 ```lua
@@ -330,10 +330,10 @@ deviation is small and deviding by it could lead to unstability.
 #### tnt.ListDataset(self, list, load[, path])
 ```
 ({
-   self = tnt.ListDataset  -- 
-   list = tds.Hash         -- 
-   load = function         -- 
-  [path = string]          -- 
+   self = tnt.ListDataset  --
+   list = tds.Hash         --
+   load = function         --
+  [path = string]          --
 })
 ```
 
@@ -351,11 +351,11 @@ can be often inferred in a simple manner.
 #### tnt.ListDataset(self, filename, load[, maxload][, path])
 ```
 ({
-   self     = tnt.ListDataset  -- 
-   filename = string           -- 
-   load     = function         -- 
-  [maxload  = number]          -- 
-  [path     = string]          -- 
+   self     = tnt.ListDataset  --
+   filename = string           --
+   load     = function         --
+  [maxload  = number]          --
+  [path     = string]          --
 })
 ```
 
@@ -371,8 +371,8 @@ each element `list[i]` will prefixed by `path/` when fed to `load()`.
 #### tnt.TableDataset(self, data)
 ```
 ({
-   self = tnt.TableDataset  -- 
-   data = table             -- 
+   self = tnt.TableDataset  --
+   data = table             --
 })
 ```
 
@@ -394,10 +394,10 @@ Data are loaded while constructing the `tnt.TableDataset`:
 #### tnt.IndexedDataset(self, fields[, path][, maxload][, mmap][, mmapidx])
 ```
 {
-   self    = tnt.IndexedDataset  -- 
-   fields  = table               -- 
-  [path    = string]             -- 
-  [maxload = number]             -- 
+   self    = tnt.IndexedDataset  --
+   fields  = table               --
+  [path    = string]             --
+  [maxload = number]             --
   [mmap    = boolean]            --  [default=false]
   [mmapidx = boolean]            --  [default=false]
 }
@@ -436,10 +436,10 @@ Archives and/or indexes can also be memory mapped with the `mmap` and
 ##### tnt.IndexedDatasetWriter(self, indexfilename, datafilename, type)
 ```
 ({
-   self          = tnt.IndexedDatasetWriter  -- 
-   indexfilename = string                    -- 
-   datafilename  = string                    -- 
-   type          = string                    -- 
+   self          = tnt.IndexedDatasetWriter  --
+   indexfilename = string                    --
+   datafilename  = string                    --
+   type          = string                    --
 })
 ```
 
@@ -463,9 +463,9 @@ heterogenous data easily into an IndexedDataset.
 ##### tnt.IndexedDatasetWriter(self, indexfilename, datafilename)
 ```
 ({
-   self          = tnt.IndexedDatasetWriter  -- 
-   indexfilename = string                    -- 
-   datafilename  = string                    -- 
+   self          = tnt.IndexedDatasetWriter  --
+   indexfilename = string                    --
+   datafilename  = string                    --
 })
 ```
 
@@ -479,8 +479,8 @@ index file.
 ###### tnt.IndexedDatasetWriter.add(self, tensor)
 ```
 ({
-   self   = tnt.IndexedDatasetWriter  -- 
-   tensor = torch.*Tensor             -- 
+   self   = tnt.IndexedDatasetWriter  --
+   tensor = torch.*Tensor             --
 })
 ```
 
@@ -489,8 +489,8 @@ than the one specified at the creation of the `tnt.IndexedDatasetWriter`.
 ###### tnt.IndexedDatasetWriter.add(self, filename)
 ```
 ({
-   self     = tnt.IndexedDatasetWriter  -- 
-   filename = string                    -- 
+   self     = tnt.IndexedDatasetWriter  --
+   filename = string                    --
 })
 ```
 
@@ -501,8 +501,8 @@ tensor is then added to the archive/index pair.
 ###### tnt.IndexedDatasetWriter.add(self, table)
 ```
 (
-   self  = tnt.IndexedDatasetWriter  -- 
-   table = table                     -- 
+   self  = tnt.IndexedDatasetWriter  --
+   table = table                     --
 )
 ```
 
@@ -512,7 +512,7 @@ The table will be serialized into a CharTensor.
 ###### tnt.IndexedDatasetWriter.add(self)
 ```
 ({
-   self = tnt.IndexedDatasetWriter  -- 
+   self = tnt.IndexedDatasetWriter  --
 })
 ```
 
@@ -523,9 +523,9 @@ flushed on disk.
 ##### tnt.IndexedDatasetReader(self, indexfilename, datafilename[, mmap][, mmapidx])
 ```
 ({
-   self          = tnt.IndexedDatasetReader  -- 
-   indexfilename = string                    -- 
-   datafilename  = string                    -- 
+   self          = tnt.IndexedDatasetReader  --
+   indexfilename = string                    --
+   datafilename  = string                    --
   [mmap          = boolean]                  --  [default=false]
   [mmapidx       = boolean]                  --  [default=false]
 })
@@ -552,10 +552,10 @@ Returns the tensor at the specified `index` in the archive.
 #### tnt.TransformDataset(self, dataset, transform[, key])
 ```
 ({
-   self      = tnt.TransformDataset  -- 
-   dataset   = tnt.Dataset           -- 
-   transform = function              -- 
-  [key       = string]               -- 
+   self      = tnt.TransformDataset  --
+   dataset   = tnt.Dataset           --
+   transform = function              --
+  [key       = string]               --
 })
 ```
 
@@ -578,9 +578,9 @@ dataset.
 #### tnt.TransformDataset(self, dataset, transforms)
 ```
 ({
-   self       = tnt.TransformDataset  -- 
-   dataset    = tnt.Dataset           -- 
-   transforms = table                 -- 
+   self       = tnt.TransformDataset  --
+   dataset    = tnt.Dataset           --
+   transforms = table                 --
 })
 ```
 
@@ -597,11 +597,11 @@ Each closure must return the new value of the corresponding field.
 #### tnt.BatchDataset(self, dataset, batchsize[, perm][, merge][, policy])
 ```
 ({
-   self      = tnt.BatchDataset  -- 
-   dataset   = tnt.Dataset       -- 
-   batchsize = number            -- 
+   self      = tnt.BatchDataset  --
+   dataset   = tnt.Dataset       --
+   batchsize = number            --
   [perm      = function]         --  [has default value]
-  [merge     = function]         -- 
+  [merge     = function]         --
   [policy    = string]           --  [default=include-last]
 })
 ```
@@ -653,11 +653,11 @@ convenient to write a dataset from scratch providing "batched" samples.
 #### tnt.CoroutineBatchDataset(self, dataset, batchsize[, perm][, merge][, policy])
 ```
 ({
-   self      = tnt.CoroutineBatchDataset  -- 
-   dataset   = tnt.Dataset                -- 
-   batchsize = number                     -- 
+   self      = tnt.CoroutineBatchDataset  --
+   dataset   = tnt.Dataset                --
+   batchsize = number                     --
   [perm      = function]                  --  [has default value]
-  [merge     = function]                  -- 
+  [merge     = function]                  --
   [policy    = string]                    --  [default=include-last]
 })
 ```
@@ -688,8 +688,8 @@ indices before actually fetching them.
 #### tnt.ConcatDataset(self, datasets)
 ```
 {
-   self     = tnt.ConcatDataset  -- 
-   datasets = table              -- 
+   self     = tnt.ConcatDataset  --
+   datasets = table              --
 }
 ```
 
@@ -725,9 +725,9 @@ provided for convenience.
 #### tnt.ShuffleDataset(self, dataset[, size][, replacement])
 ```
 ({
-   self        = tnt.ShuffleDataset  -- 
-   dataset     = tnt.Dataset         -- 
-  [size        = number]             -- 
+   self        = tnt.ShuffleDataset  --
+   dataset     = tnt.Dataset         --
+  [size        = number]             --
   [replacement = boolean]            --  [default=false]
 })
 ```
@@ -758,9 +758,9 @@ Call `resample()` to draw randomly a new permutation.
 #### tnt.SplitDataset(self, dataset, partitions)
 ```
 ({
-   self       = tnt.SplitDataset  -- 
-   dataset    = tnt.Dataset       -- 
-   partitions = table             -- 
+   self       = tnt.SplitDataset  --
+   dataset    = tnt.Dataset       --
+   partitions = table             --
 })
 ```
 
@@ -785,8 +785,8 @@ Purpose: useful in machine learning to perform validation procedures.
 ##### tnt.SplitDataset.select(self, partition)
 ```
 ({
-   self      = tnt.SplitDataset  -- 
-   partition = string            -- 
+   self      = tnt.SplitDataset  --
+   partition = string            --
 })
 ```
 
@@ -827,8 +827,8 @@ end
 #### tnt.DatasetIterator(self, dataset[, perm][, filter][, transform])
 ```
 ({
-   self      = tnt.DatasetIterator  -- 
-   dataset   = tnt.Dataset          -- 
+   self      = tnt.DatasetIterator  --
+   dataset   = tnt.Dataset          --
   [perm      = function]            --  [has default value]
   [filter    = function]            --  [has default value]
   [transform = function]            --  [has default value]
@@ -857,10 +857,10 @@ subsequent arguments, and returns what the `name` method returns.
 #### tnt.ParallelDatasetIterator(self[, init], closure, nthread[, perm][, filter][, transform][, ordered])
 ```
 ({
-   self      = tnt.ParallelDatasetIterator  -- 
+   self      = tnt.ParallelDatasetIterator  --
   [init      = function]                    --  [has default value]
-   closure   = function                     -- 
-   nthread   = number                       -- 
+   closure   = function                     --
+   nthread   = number                       --
   [perm      = function]                    --  [has default value]
   [filter    = function]                    --  [has default value]
   [transform = function]                    --  [has default value]
@@ -1089,7 +1089,7 @@ end
 #### tnt.APMeter(self)
 ```
 ({
-   self = tnt.APMeter  -- 
+   self = tnt.APMeter  --
 })
 ```
 
@@ -1108,7 +1108,7 @@ The `tnt.APMeter` has no parameters to be set.
 #### tnt.AverageValueMeter(self)
 ```
 ({
-   self = tnt.AverageValueMeter  -- 
+   self = tnt.AverageValueMeter  --
 })
 ```
 
@@ -1126,7 +1126,7 @@ The `tnt.AverageValueMeter` has no parameters to be set at initialization time.
 #### tnt.AUCMeter(self)
 ```
 ({
-   self = tnt.AUCMeter  -- 
+   self = tnt.AUCMeter  --
 })
 ```
 
@@ -1148,8 +1148,8 @@ The `tnt.AUCMeter` has no parameters to be set.
 #### tnt.ConfusionMeter(self, k[, normalized])
 ```
 {
-   self       = tnt.ConfusionMeter  -- 
-   k          = number              -- 
+   self       = tnt.ConfusionMeter  --
+   k          = number              --
   [normalized = boolean]            --  [default=false]
 }
 ```
@@ -1179,7 +1179,7 @@ columns correspond to predicted targets.
 #### tnt.mAPMeter(self)
 ```
 ({
-   self = tnt.mAPMeter  -- 
+   self = tnt.mAPMeter  --
 })
 ```
 
@@ -1198,8 +1198,8 @@ The `tnt.mAPMeter` has no parameters to be set.
 #### tnt.MultiLabelConfusionMeter(self, k[, normalized])
 ```
 {
-   self       = tnt.MultiLabelConfusionMeter  -- 
-   k          = number                        -- 
+   self       = tnt.MultiLabelConfusionMeter  --
+   k          = number                        --
   [normalized = boolean]                      --  [default=true]
 }
 ```
@@ -1232,7 +1232,7 @@ columns correspond to predicted targets.
 #### tnt.ClassErrorMeter(self[, topk][, accuracy])
 ```
 {
-   self     = tnt.ClassErrorMeter  -- 
+   self     = tnt.ClassErrorMeter  --
   [topk     = table]               --  [has default value]
   [accuracy = boolean]             --  [default=false]
 }
@@ -1265,7 +1265,7 @@ initialization time, the `value()` method returns accuracies instead of errors.
 #### tnt.TimeMeter(self[, unit])
 ```
 ({
-   self = tnt.TimeMeter  -- 
+   self = tnt.TimeMeter  --
   [unit = boolean]       --  [default=false]
 })
 ```
@@ -1292,7 +1292,7 @@ The `tnt.TimeMeter` provides the following methods:
 #### tnt.PrecisionAtKMeter(self[, topk][, dim][, online])
 ```
 {
-   self   = tnt.PrecisionAtKMeter  -- 
+   self   = tnt.PrecisionAtKMeter  --
   [topk   = table]                 --  [has default value]
   [dim    = number]                --  [default=2]
   [online = boolean]               --  [default=false]
@@ -1338,7 +1338,7 @@ number of classes (documents).
 #### tnt.RecallMeter(self[, threshold][, perclass])
 ```
 {
-   self      = tnt.RecallMeter  -- 
+   self      = tnt.RecallMeter  --
   [threshold = table]           --  [has default value]
   [perclass  = boolean]         --  [default=false]
 }
@@ -1374,7 +1374,7 @@ initialization time of the meter.
 #### tnt.PrecisionMeter(self[, threshold][, perclass])
 ```
 {
-   self      = tnt.PrecisionMeter  -- 
+   self      = tnt.PrecisionMeter  --
   [threshold = table]              --  [has default value]
   [perclass  = boolean]            --  [default=false]
 }
@@ -1410,7 +1410,7 @@ initialization time of the meter.
 #### tnt.NDCGMeter(self[, K])
 ```
 ({
-   self = tnt.NDCGMeter  -- 
+   self = tnt.NDCGMeter  --
   [K    = table]         --  [has default value]
 })
 ```
@@ -1504,12 +1504,12 @@ log:flush()
 #### tnt.Log(self, keys[, onClose][, onFlush][, onGet][, onSet])
 ```
 {
-   self    = tnt.Log  -- 
-   keys    = table    -- 
-  [onClose = table]   -- 
-  [onFlush = table]   -- 
-  [onGet   = table]   -- 
-  [onSet   = table]   -- 
+   self    = tnt.Log  --
+   keys    = table    --
+  [onClose = table]   --
+  [onFlush = table]   --
+  [onGet   = table]   --
+  [onSet   = table]   --
 }
 ```
 
@@ -1521,8 +1521,8 @@ methods will be called, respectively.
 #### tnt.Log:status(self[, message][, time])
 ```
 ({
-   self    = tnt.Log   -- 
-  [message = string]   -- 
+   self    = tnt.Log   --
+  [message = string]   --
   [time    = boolean]  --  [default=true]
 })
 ```
@@ -1532,8 +1532,8 @@ Record a status message, with corresponding (optional) time of the event.
 #### tnt.Log:set(self, keys)
 ```
 (
-   self = tnt.Log  -- 
-   keys = table    -- 
+   self = tnt.Log  --
+   keys = table    --
 )
 ```
 
@@ -1545,8 +1545,8 @@ Closures attached to the `onSet(log, key, value)` event will be called.
 #### tnt.Log:get(self, key)
 ```
 ({
-   self = tnt.Log  -- 
-   key  = string   -- 
+   self = tnt.Log  --
+   key  = string   --
 })
 ```
 
@@ -1557,7 +1557,7 @@ Closures attached to the `onGet(log, key)` event will be called.
 #### tnt.Log:flush(self)
 ```
 ({
-   self = tnt.Log  -- 
+   self = tnt.Log  --
 })
 ```
 
@@ -1568,7 +1568,7 @@ Closures attached to the `onFlush(log)` event will be called.
 #### tnt.Log:close(self)
 ```
 ({
-   self = tnt.Log  -- 
+   self = tnt.Log  --
 })
 ```
 
@@ -1579,9 +1579,9 @@ Closures attached to the `onClose(log)` event will be called.
 #### tnt.Log:attach(self, event, closures)
 ```
 ({
-   self     = tnt.Log  -- 
-   event    = string   -- 
-   closures = table    -- 
+   self     = tnt.Log  --
+   event    = string   --
+   closures = table    --
 })
 ```
 
@@ -1590,14 +1590,14 @@ Attach a set of functions (provided in a table) to a given event.
 #### tnt.RemoteLog(self, keys[, server][, name][, onClose][, onFlush][, onGet][, onSet])
 ```
 {
-   self    = tnt.RemoteLog  -- 
-   keys    = table          -- 
-  [server  = string]        -- 
+   self    = tnt.RemoteLog  --
+   keys    = table          --
+  [server  = string]        --
   [name    = string]        --  [default=default]
-  [onClose = table]         -- 
-  [onFlush = table]         -- 
-  [onGet   = table]         -- 
-  [onSet   = table]         -- 
+  [onClose = table]         --
+  [onFlush = table]         --
+  [onGet   = table]         --
+  [onSet   = table]         --
 }
 ```
 
@@ -1617,4 +1617,3 @@ is `default`, but can be specified with the `name` option.
 
 At this time, it is important to call the `close()` method when `RemoteLog`
 is not used anymore (before quitting the application).
-

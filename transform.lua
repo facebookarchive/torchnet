@@ -305,8 +305,8 @@ successive transformations.
 
 transform.randperm = argcheck{
    doc = [[
-<a name = "transform.perm">
-#### transform.perm(@ARGP)
+<a name = "transform.randperm">
+#### transform.randperm(@ARGP)
 @ARGT
 
 This function create a vector containing a permutation of the indices from 1 to `size`.
@@ -316,7 +316,7 @@ Once the vector created, this function can be used to call a specific indices in
 
 For example:
 ```lua
-> p = transform.perm(3)
+> p = transform.randperm(3)
 ```
 creates a function `p` which contains a permutation of indices:
 ```lua
