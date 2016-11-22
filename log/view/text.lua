@@ -48,10 +48,14 @@ local text = argcheck{
             txt = table.concat(txt, separator)
             if filename then
                local f = io.open(filename, 'a+') -- append
-               assert(f, string.format("could not open file <%s> for writing", filename))
-               f:write(txt)
-               f:write("\n")
-               f:close()
+               if f then
+                  f:write(txt)
+                  f:write("\n")
+                  f:close()
+               else
+                  print("failed to open for appending ", filename)
+                  print(txt)
+               end
             else
                print(txt)
             end
