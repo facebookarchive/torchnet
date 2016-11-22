@@ -48,15 +48,10 @@ local text = argcheck{
             txt = table.concat(txt, separator)
             if filename then
                local f = io.open(filename, 'a+') -- append
-               -- Make robust to transient network failures that do occur often
-               if f then
-                  f:write(txt)
-                  f:write("\n")
-                  f:close()
-               else
-                  print("failed to open for appending ", filename)
-                  print(txt)
-               end
+               assert(f, string.format("could not open file <%s> for writing", filename))
+               f:write(txt)
+               f:write("\n")
+               f:close()
             else
                print(txt)
             end
