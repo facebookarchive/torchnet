@@ -11,17 +11,22 @@ local argcheck = require 'argcheck'
 
 local json = argcheck{
    noordered=true,
+   {name="file", type="torch.File", opt=true},
    {name="filename", type="string", opt=true},
    {name="keys", type="table"},
    {name="format", type="table", opt=true},
    {name="append", type="boolean", default=false},
    call =
-      function(filename, keys__, format__, append)
+      function(file, filename, keys__, format__, append)
+         assert(not file or not filename, "file or filename expected (not both)")
+         if filename then
+            file = torch.DiskFile(filename, append and "rw" or "w")
+         end
          local keys = {}
          for idx, key in ipairs(keys__) do
             local format = format__ and format__[idx]
             if not format then
-               table.insert(keys, {name=key, format=function(value) return string.format("%s %s", key, value) end})
+               table.insert(keys, {name=key, format=tostring})
             elseif type(format) == 'function' then
                table.insert(keys, {name=key, format=format})
             elseif type(format) == 'string' then
@@ -29,11 +34,6 @@ local json = argcheck{
             else
                error('format must be a string or a function')
             end
-         end
-         if filename and not append then
-            local f = io.open(filename, 'w') -- reset the file
-            assert(f, string.format("could not open file <%s> for writing", filename))
-            f:close()
          end
          return function(log)
             local txt = {}
@@ -43,12 +43,10 @@ local json = argcheck{
                table.insert(txt, string.format('"%s": "%s"', key.name, format))
             end
             txt = string.format("{%s}", table.concat(txt, ", "))
-            if filename then
-               local f = io.open(filename, 'a+') -- append
-               assert(f, string.format("could not open file <%s> for writing", filename))
-               f:write(txt)
-               f:write("\n")
-               f:close()
+            if file then
+               file:seekEnd()
+               file:writeString(txt)
+               file:writeString("\n")
             else
                print(txt)
             end

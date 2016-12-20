@@ -12,7 +12,8 @@ At the moment, *torchnet* provides four set of important classes:
   - [`Meter`](#tntmeter): meter performance or any other quantity.
   - [`Log`](#tntlog): output performance or any other string to file / disk in a consistent manner.
 
-For an overview of the *torchnet* framework, please also refer to [this paper](https://lvdmaaten.github.io/publications/papers/Torchnet_2016.pdf).
+For an overview of the *torchnet* framework, please also refer to
+[this paper](https://lvdmaaten.github.io/publications/papers/Torchnet_2016.pdf).
 
 
 ## Installation
@@ -170,7 +171,7 @@ is equivalent to compose the transformations stored in [1] and [2], i.e.,
 defining the following transformation:
 ```lua
 > f =  function(x) return 2*x + 10 end
- ```
+```
 Note that transformations stored with keys `foo` and `4` are ignored.
 <a name = "transform.merge">
 #### transform.merge(transforms)
@@ -370,10 +371,10 @@ each element `list[i]` will prefixed by `path/` when fed to `load()`.
 <a name = "TableDataset">
 #### tnt.TableDataset(self, data)
 ```
-({
+{
    self = tnt.TableDataset  --
    data = table             --
-})
+}
 ```
 
 `tnt.TableDataset` interfaces existing data
@@ -385,21 +386,22 @@ The data must be contained in a `tds.Hash`.
 
 Data are loaded while constructing the `tnt.TableDataset`:
 ```lua
-> a = tnt.TableDataset({1,2,3})
+> a = tnt.TableDataset{data = {1,2,3}}
 > print(a:size())
 3
 ```
 `tnt.TableDataset` assumes that table has contiguous keys starting at 1.
 <a name="IndexedDataset">
-#### tnt.IndexedDataset(self, fields[, path][, maxload][, mmap][, mmapidx])
+#### tnt.IndexedDataset(self, fields[, path][, maxload][, mmap][, mmapidx][, standalone])
 ```
 {
-   self    = tnt.IndexedDataset  --
-   fields  = table               --
-  [path    = string]             --
-  [maxload = number]             --
-  [mmap    = boolean]            --  [default=false]
-  [mmapidx = boolean]            --  [default=false]
+   self       = tnt.IndexedDataset  --
+   fields     = table               --
+  [path       = string]             --
+  [maxload    = number]             --
+  [mmap       = boolean]            --  [default=false]
+  [mmapidx    = boolean]            --  [default=false]
+  [standalone = boolean]            --  [default=false]
 }
 ```
 
@@ -431,6 +433,10 @@ specified size.
 
 Archives and/or indexes can also be memory mapped with the `mmap` and
 `mmapidx` flags.
+
+If `standalone` is true, the constructor expects only one field to be
+provided. The i-th sample returned by the dataset will be the item found at
+the archive at index i. This is particularly useful with `table` archives.
 
 <a name="IndexedDatasetWriter">
 ##### tnt.IndexedDatasetWriter(self, indexfilename, datafilename, type)
@@ -594,7 +600,7 @@ to the field name).
 
 Each closure must return the new value of the corresponding field.
 <a name="BatchDataset">
-#### tnt.BatchDataset(self, dataset, batchsize[, perm][, merge][, policy])
+#### tnt.BatchDataset(self, dataset, batchsize[, perm][, merge][, policy][, filter])
 ```
 ({
    self      = tnt.BatchDataset  --
@@ -603,6 +609,7 @@ Each closure must return the new value of the corresponding field.
   [perm      = function]         --  [has default value]
   [merge     = function]         --
   [policy    = string]           --  [default=include-last]
+  [filter    = function]         --  [has default value]
 })
 ```
 
@@ -650,7 +657,7 @@ assemble samples from an existing dataset into a batch, then
 `tnt.BatchDataset` is suited for the job. Sometimes it is however more
 convenient to write a dataset from scratch providing "batched" samples.
 <a name="CoroutineBatchDataset">
-#### tnt.CoroutineBatchDataset(self, dataset, batchsize[, perm][, merge][, policy])
+#### tnt.CoroutineBatchDataset(self, dataset, batchsize[, perm][, merge][, policy][, filter])
 ```
 ({
    self      = tnt.CoroutineBatchDataset  --
@@ -659,6 +666,7 @@ convenient to write a dataset from scratch providing "batched" samples.
   [perm      = function]                  --  [has default value]
   [merge     = function]                  --
   [policy    = string]                    --  [default=include-last]
+  [filter    = function]                  --  [has default value]
 })
 ```
 
@@ -755,12 +763,13 @@ dataset.
 
 Call `resample()` to draw randomly a new permutation.
 <a name="SplitDataset">
-#### tnt.SplitDataset(self, dataset, partitions)
+#### tnt.SplitDataset(self, dataset, partitions[, initialpartition])
 ```
 ({
-   self       = tnt.SplitDataset  --
-   dataset    = tnt.Dataset       --
-   partitions = table             --
+   self             = tnt.SplitDataset  --
+   dataset          = tnt.Dataset       --
+   partitions       = table             --
+  [initialpartition = string]           --
 })
 ```
 
@@ -801,7 +810,7 @@ by the `get()` method.
 It is easy to iterate over datasets using a for loop. However, sometimes
 one wants to filter out samples in a on-the-fly manner or thread sample fetching.
 
-Iterators are here for this particular cases. In general, refrain writing
+Iterators are here for this particular cases. In general, refrain from writing
 iterators for handling custom cases, and write instead a `tnt.Dataset`
 
 Iterators implement two methods:
@@ -888,8 +897,8 @@ by default.
 
 `perm(idx)` is a permutation used to shuffle the examples. If shuffling is
 needed, one can use this closure, or (better) use
-[tnt.ShuffleDataset](#ShuffleDataset) on the underlying dataset (returned by
-`closure()`).
+[tnt.ShuffleDataset](#ShuffleDataset) on the underlying dataset
+(returned by `closure()`).
 
 `filter(sample)` is a closure which returns `true` if the given sample
 should be considered or `false` if not. Note that filter is called _after_
@@ -1095,13 +1104,14 @@ end
 
 The `tnt.APMeter` measures the average precision per class.
 
-The `tnt.APMeter` is designed to operate on `NxK` Tensors `output` and `target`,
-where (1) the `output` contains model output scores for `N` examples and `K`
-classes that ought to be higher when the model is more convinced that the
-example should be positively labeled, and smaller when the model believes the
-example should be negatively labeled (for instance, the output of a sigmoid
-function); and (2) the `target` contains only values 0 (for negative examples)
-and 1 (for positive examples).
+The `tnt.APMeter` is designed to operate on `NxK` Tensors `output` and
+`target`, and optionally a `Nx1` Tensor weight where (1) the `output` contains
+model output scores for `N` examples and `K` classes that ought to be higher
+when the model is more convinced that the example should be positively labeled,
+and smaller when the model believes the example should be negatively labeled
+(for instance, the output of a sigmoid function); (2) the `target` contains
+only values 0 (for negative examples) and 1 (for positive examples); and (3)
+the `weight` ( > 0) reprsents weight for each sample.
 
 The `tnt.APMeter` has no parameters to be set.
 <a name="AverageValueMeter">
@@ -1185,15 +1195,36 @@ columns correspond to predicted targets.
 
 The `tnt.mAPMeter` measures the mean average precision over all classes.
 
-The `tnt.mAPMeter` is designed to operate on `NxK` Tensors `output` and `target`
-where (1) the `output` contains model output scores for `N` examples and `K`
-classes that ought to be higher when the model is more convinced that the
-example should be positively labeled, and smaller when the model believes the
-example should be negatively labeled (for instance, the output of a sigmoid
-function); and (2) the `target` contains only values 0 (for negative examples)
-and 1 (for positive examples).
+The `tnt.mAPMeter` is designed to operate on `NxK` Tensors `output` and
+`target`, and optionally a `Nx1` Tensor weight where (1) the `output` contains
+model output scores for `N` examples and `K` classes that ought to be higher
+when the model is more convinced that the example should be positively labeled,
+and smaller when the model believes the example should be negatively labeled
+(for instance, the output of a sigmoid function); (2) the `target` contains
+only values 0 (for negative examples) and 1 (for positive examples); and (3)
+the `weight` ( > 0) reprsents weight for each sample.
 
 The `tnt.mAPMeter` has no parameters to be set.
+<a name="MovingAverageValueMeter">
+#### tnt.MovingAverageValueMeter(self, windowsize)
+```
+({
+   self       = tnt.MovingAverageValueMeter  --
+   windowsize = number                       --
+})
+```
+
+The `tnt.MovingAverageValueMeter` measures and returns the average value
+and the standard deviation of any collection of numbers that are `add`ed to it
+within the most recent moving average window. It is useful, for instance,
+to measure the average loss over a collection of examples withing the
+most recent window.
+
+The `add()` function expects as input a Lua number `value`, which is the value
+that needs to be added to the list of values to average.
+
+The `tnt.MovingAverageValueMeter` needs the moving window size to be set at
+initialization time.
 <a name="MultiLabelConfusionMeter">
 #### tnt.MultiLabelConfusionMeter(self, k[, normalized])
 ```
@@ -1287,7 +1318,6 @@ The `tnt.TimeMeter` provides the following methods:
    * `resume()` resumes the timer.
    * `incUnit()` increments the unit counter by one.
    * `value()` returns the time passed since the last `reset()`; divided by the counter value when `unit=true`.
-
 <a name="PrecisionAtKMeter">
 #### tnt.PrecisionAtKMeter(self[, topk][, dim][, online])
 ```
@@ -1299,8 +1329,8 @@ The `tnt.TimeMeter` provides the following methods:
 }
 ```
 
-The `tnt.PrecisionAtKMeter` measures the precision@k of ranking methods at pre-
-specified levels k. The precision@k is the percentage of the k front-ranked
+The `tnt.PrecisionAtKMeter` measures the precision@k of ranking methods at pre-specified
+levels k. The precision@k is the percentage of the k front-ranked
 items according to the model that is in the list of correct (positive) targets.
 
 At initialization time, a table `topk` may be given as input that specifies the
@@ -1409,10 +1439,10 @@ initialization time of the meter.
 <a name="NDCGMeter">
 #### tnt.NDCGMeter(self[, K])
 ```
-({
+{
    self = tnt.NDCGMeter  --
   [K    = table]         --  [has default value]
-})
+}
 ```
 
 The `tnt.NDCGMeter` measures the normalized discounted cumulative gain (NDCG) of
@@ -1586,34 +1616,4 @@ Closures attached to the `onClose(log)` event will be called.
 ```
 
 Attach a set of functions (provided in a table) to a given event.
-<a name="RemoteLog">
-#### tnt.RemoteLog(self, keys[, server][, name][, onClose][, onFlush][, onGet][, onSet])
-```
-{
-   self    = tnt.RemoteLog  --
-   keys    = table          --
-  [server  = string]        --
-  [name    = string]        --  [default=default]
-  [onClose = table]         --
-  [onFlush = table]         --
-  [onGet   = table]         --
-  [onSet   = table]         --
-}
-```
 
-Creates a new `RemoteLog` with allowed keys (strings) `keys`.  Specifiy event
-closures with table of functions `onClose`, `onFlush`, `onGet` and `onSet`,
-which will be called when `close()`, `flush()`, `get()`, and `set{}`
-methods will be called, respectively.
-
-If `server` is not provided, `RemoteLog` creates a server which can later be
-reached at the address provided by `server()`.
-
-If `server` is provided, `RemoteLog` will dialog with the given server to
-store any values to be recorded by the `Log` (or query any of these values).
-
-A given server can record different `Log`, with different names. The default name
-is `default`, but can be specified with the `name` option.
-
-At this time, it is important to call the `close()` method when `RemoteLog`
-is not used anymore (before quitting the application).

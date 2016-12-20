@@ -11,13 +11,18 @@ local argcheck = require 'argcheck'
 
 local text = argcheck{
    noordered=true,
+   {name="file", type="torch.File", opt=true},
    {name="filename", type="string", opt=true},
    {name="keys", type="table"},
    {name="format", type="table", opt=true},
    {name="separator", type="string", default=" | "},
    {name="append", type="boolean", default=false},
    call =
-      function(filename, keys__, format__, separator, append)
+      function(file, filename, keys__, format__, separator, append)
+         assert(not file or not filename, "file or filename expected (not both)")
+         if filename then
+            file = torch.DiskFile(filename, append and "rw" or "w")
+         end
          local keys = {}
          for idx, key in ipairs(keys__) do
             local format = format__ and format__[idx]
@@ -31,11 +36,6 @@ local text = argcheck{
                error('format must be a string or a function')
             end
          end
-         if filename and not append then
-            local f = io.open(filename, 'w') -- reset the file
-            assert(f, string.format("could not open file <%s> for writing", filename))
-            f:close()
-         end
          return function(log)
             local txt = {}
             for _, key in ipairs(keys) do
@@ -46,16 +46,10 @@ local text = argcheck{
                end
             end
             txt = table.concat(txt, separator)
-            if filename then
-               local f = io.open(filename, 'a+') -- append
-               if f then
-                  f:write(txt)
-                  f:write("\n")
-                  f:close()
-               else
-                  print("failed to open for appending ", filename)
-                  print(txt)
-               end
+            if file then
+               file:seekEnd()
+               file:writeString(txt)
+               file:writeString("\n")
             else
                print(txt)
             end

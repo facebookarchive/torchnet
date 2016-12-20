@@ -11,24 +11,22 @@ local argcheck = require 'argcheck'
 
 local status = argcheck{
    noordered=true,
+   {name="file", type="torch.File", opt=true},
    {name="filename", type="string", opt=true},
    {name="append", type="boolean", default=false},
    call =
-      function(filename, append)
-         if filename and not append then
-            local f = io.open(filename, 'w') -- reset the file
-            assert(f, string.format("could not open file <%s> for writing", filename))
-            f:close()
+      function(file, filename, append)
+         assert(not file or not filename, "file or filename expected (not both)")
+         if filename then
+            file = torch.DiskFile(filename, append and "rw" or "w")
          end
          return function(data, key, value)
             if key == '__status__' then
                local status = tostring(value)
-               if filename then
-                  local f = io.open(filename, 'a+') -- append
-                  assert(f, string.format("could not open file <%s> for writing", filename))
-                  f:write(status)
-                  f:write("\n")
-                  f:close()
+               if file then
+                  file:seekEnd()
+                  file:writeString(status)
+                  file:writeString("\n")
                else
                   print(status)
                end

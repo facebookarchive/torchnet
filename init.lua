@@ -101,7 +101,6 @@ require 'torchnet.meter.precisionmeter'
 require 'torchnet.meter.ndcgmeter'
 
 require 'torchnet.log'
-require 'torchnet.log.remotelog'
 
 require 'torchnet.utils'
 require 'torchnet.transform'
