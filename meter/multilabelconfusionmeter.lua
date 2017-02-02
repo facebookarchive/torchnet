@@ -103,7 +103,8 @@ MultiLabelConfusionMeter.add = argcheck{
 
             -- convert targets and predictions to sets:
             local targetTable, predTable = tds.hash(), tds.hash()
-            local pos = torch.range(1, nc)[torch.eq(target[n], 1)]
+            local pos =
+               torch.range(1, nc):round():long()[torch.eq(target[n], 1)]
             for k = 1,pos:nElement() do
                targetTable[pos[k]]   = 1
                predTable[pred[n][k]] = 1
