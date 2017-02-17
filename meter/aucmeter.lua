@@ -96,7 +96,7 @@ AUCMeter.value = argcheck{
       function(self)
 
          -- sort the scores:
-         if not self.scores:nElement() == 0 then return 0.5 end
+         if self.scores:nElement() == 0 then return 0.5 end
          local scores, sortind = torch.sort(self.scores, 1, true)
 
          -- construct the ROC curve:
