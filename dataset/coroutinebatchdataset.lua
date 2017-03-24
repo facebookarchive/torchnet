@@ -72,6 +72,13 @@ CoroutineBatchDataset.get = argcheck{
             function() return self.dataset:get(self.perm(idx)) end
          )  -- create coroutine that gets example
          local status, sample = coroutine.resume(crs[n])  -- register sample
+         if not status and
+            string.format('%s', sample) == 'not enough memory' then
+           collectgarbage()
+           collectgarbage()
+           status, sample = coroutine.resume(crs[n])  -- register sample
+         end
+
          if not status then
             error(string.format('dataset threw error: %s', sample))
          end
