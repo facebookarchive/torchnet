@@ -45,7 +45,6 @@ The `value()` method has no parameters and returns the confusion matrix in a
 KxK tensor. In the confusion matrix, rows correspond to ground-truth targets and
 columns correspond to predicted targets.
 ]],
-   noordered = true,
    {name="self", type="tnt.MultiLabelConfusionMeter"},
    {name="k", type="number"},
    {name="normalized", type="boolean", default=true},
