@@ -113,6 +113,8 @@ on which `tnt.ParallelDatasetIterator` relies.
                         return sample, origIdx
                      end,
                      function(_sample_, _origIdx_)
+                        collectgarbage()
+                        collectgarbage()
                         sample, sampleOrigIdx = _sample_, _origIdx_
                      end,
                      idx, perm(idx)
