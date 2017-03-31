@@ -77,6 +77,7 @@ require 'torchnet.dataset.concatdataset'
 require 'torchnet.dataset.resampledataset'
 require 'torchnet.dataset.shuffledataset'
 require 'torchnet.dataset.splitdataset'
+require 'torchnet.dataset.imagedataset'
 require 'torchnet.dataset.datasetiterator'
 require 'torchnet.dataset.paralleldatasetiterator'
 
