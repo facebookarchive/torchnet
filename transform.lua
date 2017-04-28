@@ -240,7 +240,7 @@ Then apply this function will produce:
          return
             function(tbl)
                local mergedtbl = {}
-               for idx, elem in ipairs(tbl) do
+               for idx, elem in pairs(tbl) do
                   for key, value in pairs(elem) do
                      if not mergedtbl[key] then
                         mergedtbl[key] = {}
