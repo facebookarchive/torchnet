@@ -59,7 +59,7 @@ OptimEngine.train = argcheck{
    {name="criterion", type="nn.Criterion"},
    {name="iterator", type="tnt.DatasetIterator"},
    {name="maxepoch", type="number", default=1000},
-   {name="epoch", type="number", default=0},}
+   {name="epoch", type="number", default=0},
    {name="optimMethod", type="function"},
    {name="config", type="table", opt=true},
    {name="optimState", type="table", opt=true},
