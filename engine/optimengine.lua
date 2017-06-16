@@ -59,23 +59,24 @@ OptimEngine.train = argcheck{
    {name="criterion", type="nn.Criterion"},
    {name="iterator", type="tnt.DatasetIterator"},
    {name="maxepoch", type="number", default=1000},
+   {name="epoch", type="number", default=0},}
    {name="optimMethod", type="function"},
    {name="config", type="table", opt=true},
    {name="optimState", type="table", opt=true},
    {name="paramFun", type="function", opt=true},
    call =
-      function(self, network, criterion, iterator, maxepoch, optimMethod,
+      function(self, network, criterion, iterator, maxepoch, epoch, optimMethod,
                 config, optimState, paramFun)
          local state = {
             network = network,
             criterion = criterion,
             iterator = iterator,
             maxepoch = maxepoch,
+            epoch = epoch, -- epoch done so far
             optimMethod = optimMethod,
             sample = {},
             config = config or {},
             optim = optimState or {},
-            epoch = 0, -- epoch done so far
             t = 0, -- samples seen so far
             training = true
          }

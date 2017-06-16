@@ -63,7 +63,7 @@ state = {
    ['lrcriterion'] = lrcriterion,
    ['maxepoch']    = maxepoch,
    ['sample']      = {},
-   ['epoch']       = 0, -- epoch done so far
+   ['epoch']       = epoch, -- epoch done so far
    ['t']           = 0, -- samples seen so far
    ['training']    = true
 }
@@ -95,8 +95,9 @@ SGDEngine.train = argcheck{
    {name="lr", type="number"},
    {name="lrcriterion", type="number", defaulta="lr"},
    {name="maxepoch", type="number", default=1000},
+   {name="epoch", type="number", default=0},
    call =
-      function(self, network, criterion, iterator, lr, lrcriterion, maxepoch)
+      function(self, network, criterion, iterator, lr, lrcriterion, maxepoch, epoch)
          local state = {
             network = network,
             criterion = criterion,
@@ -105,7 +106,7 @@ SGDEngine.train = argcheck{
             lrcriterion = lrcriterion,
             maxepoch = maxepoch,
             sample = {},
-            epoch = 0, -- epoch done so far
+            epoch = epoch, -- epoch done so far
             t = 0, -- samples seen so far
             training = true
          }
