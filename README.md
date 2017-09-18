@@ -239,7 +239,7 @@ produces a function which multiplies any input by 2:
 #### transform.tablemergekeys()
 
 This function merges tables by key. More precisely, the input must be a
-`table` of `table` and this function will reverse the table orderto
+`table` of `table` and this function will reverse the table in order to
 make the keys from the nested table accessible first.
 
 For example, if the input is:
@@ -326,7 +326,7 @@ The input must be a `Tensor`.
 Once create, a `threshold` can be given (must be a number). Then,
 the data will be divided by their standard deviation, only if this
 deviation is greater than the `threshold`. This is handy, if the
-deviation is small and deviding by it could lead to unstability.
+deviation is small and dividing by it could lead to instability.
 <a name="ListDataset">
 #### tnt.ListDataset(self, list, load[, path])
 ```
@@ -1111,7 +1111,7 @@ when the model is more convinced that the example should be positively labeled,
 and smaller when the model believes the example should be negatively labeled
 (for instance, the output of a sigmoid function); (2) the `target` contains
 only values 0 (for negative examples) and 1 (for positive examples); and (3)
-the `weight` ( > 0) reprsents weight for each sample.
+the `weight` ( > 0) represents weight for each sample.
 
 The `tnt.APMeter` has no parameters to be set.
 <a name="AverageValueMeter">
@@ -1150,7 +1150,7 @@ The `tnt.AUCMeter` is designed to operate on one-dimensional Tensors `output`
 and `target`, where (1) the `output` contains model output scores that ought to
 be higher when the model is more convinced that the example should be positively
 labeled, and smaller when the model believes the example should be negatively
-labeled (for instance, the output of a signoid function); and (2) the `target`
+labeled (for instance, the output of a sigmoid function); and (2) the `target`
 contains only values 0 (for negative examples) and 1 (for positive examples).
 
 The `tnt.AUCMeter` has no parameters to be set.
@@ -1217,7 +1217,7 @@ The `tnt.mAPMeter` has no parameters to be set.
 The `tnt.MovingAverageValueMeter` measures and returns the average value
 and the standard deviation of any collection of numbers that are `add`ed to it
 within the most recent moving average window. It is useful, for instance,
-to measure the average loss over a collection of examples withing the
+to measure the average loss over a collection of examples within the
 most recent window.
 
 The `add()` function expects as input a Lua number `value`, which is the value
